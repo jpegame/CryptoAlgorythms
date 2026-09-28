@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoWeb - Cifra de Hill</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eep2ff',
+                            100: '#e0e7ff',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Smooth animations and visual touches */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .matrix-bracket {
+            position: relative;
+        }
+        .matrix-bracket::before, .matrix-bracket::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+            border: 2px solid #6366f1;
+        }
+        .matrix-bracket::before {
+            left: -4px;
+            border-right: none;
+            border-radius: 6px 0 0 6px;
+        }
+        .matrix-bracket::after {
+            right: -4px;
+            border-left: none;
+            border-radius: 0 6px 6px 0;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col font-sans text-slate-800 antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-indigo-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand / Logo -->
+                <div class="flex items-center space-x-3">
+                    <a href="#" class="flex items-center space-x-2 text-white font-bold text-xl tracking-tight hover:opacity-90 transition">
+                        <div class="bg-indigo-900/80 p-2 rounded-lg border border-indigo-400/30">
+                            <svg class="w-6 h-6 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                        <span>Crypto<span class="text-indigo-300">Web</span></span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex space-x-1">
+                    <a href="sistema_de_criptografia.html" class="text-indigo-100 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">OTP</a>
+                    <a href="cifra_de_cesar.html" class="text-indigo-100 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Cifra de César</a>
+                    <a href="cifra_de_vigenere.html" class="text-indigo-100 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Cifra de Vigenère</a>
+                    <a href="cifra_de_hill.html" class="bg-indigo-900 text-white px-3 py-2 rounded-md text-sm font-medium shadow-inner border border-indigo-500/30">Cifra de Hill</a>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" type="button" class="p-2 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-600 focus:outline-none" aria-label="Abrir Menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-indigo-800 border-t border-indigo-600 px-4 pt-2 pb-3 space-y-1">
+            <a href="sistema_de_criptografia.html" class="block text-indigo-100 hover:bg-indigo-700 px-3 py-2 rounded-md text-base font-medium">OTP</a>
+            <a href="cifra_de_cesar.html" class="block text-indigo-100 hover:bg-indigo-700 px-3 py-2 rounded-md text-base font-medium">Cifra de César</a>
+            <a href="cifra_de_vigenere.html" class="block text-indigo-100 hover:bg-indigo-700 px-3 py-2 rounded-md text-base font-medium">Cifra de Vigenère</a>
+            <a href="cifra_de_hill.html" class="block bg-indigo-900 text-white px-3 py-2 rounded-md text-base font-medium">Cifra de Hill</a>
+        </div>
+    </header>
+
+    <!-- Hero Header Section -->
+    <section class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white py-10 px-4 sm:px-6 lg:px-8 border-b border-indigo-700/50 shadow-inner">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="space-y-3 max-w-3xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-200 border border-indigo-400/30 backdrop-blur-md">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Álgebra Linear & Bloco Polygráfico (1929)
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Cifra de Hill</h1>
+                    <p class="text-indigo-200 text-sm sm:text-base leading-relaxed">
+                        Inventada pelo matemático <strong class="text-white">Lester S. Hill</strong>, esta cifra utiliza multiplicação de matrizes e aritmética modular para criptografar blocos de letras simultaneamente. O processo de decifragens requer o cálculo do determinante e da <strong class="text-white">matriz inversa módulo 26</strong>.
+                    </p>
+                </div>
+                <!-- Preset Quick Buttons -->
+                <div class="flex flex-wrap gap-2 md:flex-col md:w-56 shrink-0">
+                    <button onclick="loadPreset('HILL')" class="flex-1 bg-indigo-700/60 hover:bg-indigo-600 text-xs font-semibold py-2 px-3 rounded-lg border border-indigo-500/40 transition text-center flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Exemplo 2x2 ("HILL")
+                    </button>
+                    <button onclick="loadPreset('GYBNQCURP')" class="flex-1 bg-indigo-700/60 hover:bg-indigo-600 text-xs font-semibold py-2 px-3 rounded-lg border border-indigo-500/40 transition text-center flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        Exemplo 3x3 ("GYBNQCURP")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Global Key Matrix Configuration Panel -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 0121 9z"/></svg>
+                        Configuração da Chave Matricial $K$
+                    </h2>
+                    <p class="text-xs text-slate-5-00 text-slate-500">Defina o tamanho da matriz e a palavra-chave ou os valores numéricos individualmente.</p>
+                </div>
+
+                <!-- Dimension Controls -->
+                <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
+                    <button id="btn-dim-2" onclick="setMatrixSize(2)" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white shadow-sm transition">
+                        Matriz 2x2
+                    </button>
+                    <button id="btn-dim-3" onclick="setMatrixSize(3)" class="px-4 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition">
+                        Matriz 3x3
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                
+                <!-- Input Mode: Text Keyword or Direct Matrix Input -->
+                <div class="md:col-span-5 space-y-4">
+                    <div>
+                        <label for="key-word-input" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                            Palavra-Chave (<span id="key-length-hint">4 letras para 2x2</span>)
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="key-word-input" value="HILL" uppercase maxlength="9" oninput="handleKeywordChange(this.value)" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-lg uppercase tracking-widest text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+                            <button onclick="randomizeKey()" title="Gerar chave invertível aleatória" class="absolute right-2 top-2 px-2.5 py-1 text-xs font-medium bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg transition">
+                                🎲 Aleatória
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Matrix Grid Numeric Inputs -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                            Matriz Numérica Módulo 26
+                        </label>
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center">
+                            <div id="matrix-grid-container" class="matrix-bracket inline-grid gap-2 p-2">
+                                <!-- Matrix Inputs injected dynamically by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Matrix Analytics & Invertibility Inspector Card -->
+                <div class="md:col-span-7 bg-slate-900 text-slate-100 rounded-xl p-5 space-y-4 shadow-md font-mono text-xs">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <span class="font-bold text-slate-300 text-sm flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                            Análise Matemática da Chave $K$
+                        </span>
+                        <div id="invertible-badge" class="px-2.5 py-1 rounded-full text-xs font-sans font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                            ✓ Invertível Mod 26
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                            <div class="text-slate-400 text-[10px] uppercase">Determinante $\det(K)$</div>
+                            <div id="stat-det-raw" class="text-base font-bold text-white mt-1">15</div>
+                        </div>
+                        <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                            <div class="text-slate-400 text-[10px] uppercase">$\det(K) \pmod{26}$</div>
+                            <div id="stat-det-mod" class="text-base font-bold text-indigo-300 mt-1">15</div>
+                        </div>
+                        <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                            <div class="text-slate-400 text-[10px] uppercase">$\gcd(\det, 26)$</div>
+                            <div id="stat-gcd" class="text-base font-bold text-amber-300 mt-1">1</div>
+                        </div>
+                        <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                            <div class="text-slate-400 text-[10px] uppercase">Inverso $\det^{-1} \pmod{26}$</div>
+                            <div id="stat-inv-det" class="text-base font-bold text-emerald-300 mt-1">7</div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-slate-400">
+                        <div>
+                            Status: <span id="invertibility-explanation" class="text-slate-200">Como $\gcd(15, 26) = 1$, a chave possui matriz inversa para decifrar.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Encryption and Decryption Grid Panel -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <!-- LEFT PANEL: Criptografar Mensagem -->
+            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                <!-- Card Header -->
+                <div class="bg-indigo-700 px-6 py-4 text-white flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="p-1.5 bg-indigo-800 rounded-lg border border-indigo-500/40">
+                            <svg class="w-5 h-5 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        </div>
+                        <h3 class="font-bold text-lg">Criptografar Mensagem</h3>
+                    </div>
+                    <span class="text-xs bg-indigo-800/80 text-indigo-200 px-2.5 py-1 rounded-full border border-indigo-500/30 font-mono">$C = (P \times K) \pmod{26}$</span>
+                </div>
+
+                <div class="p-6 space-y-5 flex-grow flex flex-col">
+                    <!-- Plaintext Input -->
+                    <div>
+                        <label for="enc-input-text" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                            Texto Claro (Mensagem Original)
+                        </label>
+                        <textarea id="enc-input-text" rows="3" placeholder="Digite a mensagem para criptografar (ex: ACT ou HELP)..." class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl font-mono text-sm uppercase text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition resize-none">HELP</textarea>
+                    </div>
+
+                    <!-- Padding Option -->
+                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <span class="text-xs font-medium text-slate-600">Caractere de Preenchimento (Padding)</span>
+                        <select id="enc-padding-char" class="bg-white border border-slate-300 rounded-lg text-xs font-mono px-2.5 py-1 text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option value="X">X (Padrão)</option>
+                            <option value="Z">Z</option>
+                            <option value="A">A</option>
+                        </select>
+                    </div>
+
+                    <!-- Encrypt Action Button -->
+                    <button id="btn-encrypt" onclick="executeEncryption()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-indigo-500/20 active:scale-[0.99] transition flex items-center justify-center space-x-2">
+                        <svg id="enc-spinner" class="hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span id="enc-btn-label">Criptografar Mensagem</span>
+                    </button>
+
+                    <!-- Encrypted Output Area -->
+                    <div class="mt-auto space-y-3 pt-2">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-slate-700 uppercase tracking-wider">Resultado Cifrado</label>
+                            <button onclick="copyToClipboard('enc-result-text', 'Texto Cifrado')" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                Copiar
+                            </button>
+                        </div>
+                        <div id="enc-result-card" class="p-4 bg-indigo-50/80 border border-indigo-200 rounded-xl font-mono text-lg font-bold text-indigo-900 break-all select-all min-h-[52px] flex items-center justify-between">
+                            <span id="enc-result-text">PWIT</span>
+                            <span class="text-xs font-sans font-normal text-indigo-500 bg-white px-2 py-0.5 rounded border border-indigo-200">Módulo 26</span>
+                        </div>
+
+                        <!-- Step-by-Step Operations Log (Dark Block) -->
+                        <div class="space-y-1">
+                            <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Passo a Passo da Álgebra Linear</div>
+                            <div id="enc-steps-log" class="bg-slate-900 text-emerald-400 font-mono text-xs p-4 rounded-xl max-h-48 overflow-y-auto leading-relaxed border border-slate-800">
+                                [Status] Aguardando acionamento da criptografia...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT PANEL: Decriptografar Mensagem -->
+            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                <!-- Card Header -->
+                <div class="bg-emerald-700 px-6 py-4 text-white flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="p-1.5 bg-emerald-800 rounded-lg border border-emerald-500/40">
+                            <svg class="w-5 h-5 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+                        </div>
+                        <h3 class="font-bold text-lg">Decriptografar Mensagem</h3>
+                    </div>
+                    <span class="text-xs bg-emerald-800/80 text-emerald-200 px-2.5 py-1 rounded-full border border-emerald-500/30 font-mono">$P = (C \times K^{-1}) \pmod{26}$</span>
+                </div>
+
+                <div class="p-6 space-y-5 flex-grow flex flex-col">
+                    <!-- Ciphertext Input -->
+                    <div>
+                        <label for="dec-input-text" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                            Texto Cifrado (Criptograma)
+                        </label>
+                        <textarea id="dec-input-text" rows="3" placeholder="Digite o texto cifrado para decodificar (ex: PWIT)..." class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl font-mono text-sm uppercase text-slate-900 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition resize-none">PWIT</textarea>
+                    </div>
+
+                    <!-- Decryption Key Option Notice -->
+                    <div class="flex items-center justify-between bg-emerald-50/60 p-3 rounded-xl border border-emerald-200">
+                        <div class="flex items-center space-x-2 text-xs text-emerald-900">
+                            <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Usa a mesma chave $K$ ativa para calcular $K^{-1} \pmod{26}$.</span>
+                        </div>
+                    </div>
+
+                    <!-- Decrypt Action Button -->
+                    <button id="btn-decrypt" onclick="executeDecryption()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-emerald-500/20 active:scale-[0.99] transition flex items-center justify-center space-x-2">
+                        <svg id="dec-spinner" class="hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span id="dec-btn-label">Decriptografar Mensagem</span>
+                    </button>
+
+                    <!-- Decrypted Output Area -->
+                    <div class="mt-auto space-y-3 pt-2">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-slate-700 uppercase tracking-wider">Texto Decifrado (Original)</label>
+                            <button onclick="copyToClipboard('dec-result-text', 'Texto Decifrado')" class="text-xs text-emerald-600 hover:text-emerald-800 font-medium flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                Copiar
+                            </button>
+                        </div>
+                        <div id="dec-result-card" class="p-4 bg-emerald-50/80 border border-emerald-200 rounded-xl font-mono text-lg font-bold text-emerald-900 break-all select-all min-h-[52px] flex items-center justify-between">
+                            <span id="dec-result-text">HELP</span>
+                            <span class="text-xs font-sans font-normal text-emerald-600 bg-white px-2 py-0.5 rounded border border-emerald-200">Reconstruído</span>
+                        </div>
+
+                        <!-- Step-by-Step Operations Log (Dark Block) -->
+                        <div class="space-y-1">
+                            <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Cálculo da Matriz Inversa & Vetores</div>
+                            <div id="dec-steps-log" class="bg-slate-900 text-indigo-300 font-mono text-xs p-4 rounded-xl max-h-48 overflow-y-auto leading-relaxed border border-slate-800">
+                                [Status] Aguardando acionamento da decriptografia...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Theory & Technical Breakdown Section -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
+            <div class="border-b border-slate-100 pb-4">
+                <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    Fundamentos Matemáticos da Cifra de Hill
+                </h3>
+                <p class="text-sm text-slate-500 mt-1">Como a criptografia de bloco baseada em matrizes funciona no alfabeto de 26 letras.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Card 1: Vector Multiplication -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">1</div>
+                    <h4 class="font-bold text-slate-900 text-sm">Vetorização e Cifragem</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        A mensagem é dividida em blocos de tamanho $n$ (ex: pares para matriz 2x2). Cada letra é convertida para seu valor numérico ($A=0, B=1, \dots, Z=25$) formando um vetor linha $P$:
+                    </p>
+                    <div class="bg-white p-2.5 rounded-lg border border-slate-200 font-mono text-[11px] text-indigo-900 text-center">
+                        $C \equiv P \cdot K \pmod{26}$
+                    </div>
+                </div>
+
+                <!-- Card 2: Determinant & Coprimality -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">2</div>
+                    <h4 class="font-bold text-slate-900 text-sm">Condição de Invertibilidade</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Para que a chave $K$ seja válida para decodificação, o determinante $\det(K)$ deve ser <strong class="text-slate-800">coprimo com 26</strong>. Ou seja, não pode compartilhar fatores com 2 e 13:
+                    </p>
+                    <div class="bg-white p-2.5 rounded-lg border border-slate-200 font-mono text-[11px] text-amber-900 text-center">
+                        $\gcd(\det(K), 26) = 1$
+                    </div>
+                </div>
+
+                <!-- Card 3: Modular Matrix Inversion -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">3</div>
+                    <h4 class="font-bold text-slate-900 text-sm">Decifragens e Inversa Módulo 26</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        A matriz de decifragens é calculada multiplicando o inverso multiplicativo do determinante pela matriz adjunta (adjugada) de $K$:
+                    </p>
+                    <div class="bg-white p-2.5 rounded-lg border border-slate-200 font-mono text-[11px] text-emerald-900 text-center">
+                        $K^{-1} \equiv \det(K)^{-1} \cdot \text{adj}(K) \pmod{26}$
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Table of Coprime Modular Inverses Modulo 26 -->
+            <div class="pt-4 border-t border-slate-100 space-y-3">
+                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Tabela de Inversos Multiplicativos Módulo 26</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-center border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 font-semibold border border-slate-200">
+                                <th class="p-2 border border-slate-200">$x$ (Coprimo com 26)</th>
+                                <th class="p-2 border border-slate-200">1</th>
+                                <th class="p-2 border border-slate-200">3</th>
+                                <th class="p-2 border border-slate-200">5</th>
+                                <th class="p-2 border border-slate-200">7</th>
+                                <th class="p-2 border border-slate-200">9</th>
+                                <th class="p-2 border border-slate-200">11</th>
+                                <th class="p-2 border border-slate-200">15</th>
+                                <th class="p-2 border border-slate-200">17</th>
+                                <th class="p-2 border border-slate-200">19</th>
+                                <th class="p-2 border border-slate-200">21</th>
+                                <th class="p-2 border border-slate-200">23</th>
+                                <th class="p-2 border border-slate-200">25</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="font-mono bg-white text-indigo-900">
+                                <td class="p-2 font-sans font-semibold bg-slate-50 border border-slate-200">$x^{-1} \pmod{26}$</td>
+                                <td class="p-2 border border-slate-200 font-bold">1</td>
+                                <td class="p-2 border border-slate-200">9</td>
+                                <td class="p-2 border border-slate-200">21</td>
+                                <td class="p-2 border border-slate-200 font-bold text-emerald-600">15</td>
+                                <td class="p-2 border border-slate-200">3</td>
+                                <td class="p-2 border border-slate-200">19</td>
+                                <td class="p-2 border border-slate-200 font-bold text-indigo-600">7</td>
+                                <td class="p-2 border border-slate-200">23</td>
+                                <td class="p-2 border border-slate-200">11</td>
+                                <td class="p-2 border border-slate-200">5</td>
+                                <td class="p-2 border border-slate-200">17</td>
+                                <td class="p-2 border border-slate-200">25</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-2">
+                <span class="font-bold text-white tracking-tight">Crypto<span class="text-indigo-400">Web</span></span>
+                <span>— Plataforma Interativa de Criptografia Clássica</span>
+            </div>
+            <div class="text-slate-500">
+                &copy; 2026 CryptoWeb. Todos os direitos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <script>
+        /**
+         * Global State for Hill Cipher Application
+         */
+        const state = {
+            matrixSize: 2, // 2 or 3
+            matrix: [
+                [7, 8],
+                [11, 11]
+            ], // Default: "HILL" -> [[7, 8], [11, 11]]
+            keyword: "HILL",
+            isInvertible: true,
+            detRaw: 15,
+            detMod: 15,
+            detInv: 7,
+            gcd: 1,
+            invMatrix: [
+                [25, 22],
+                [1, 23]
+            ]
+        };
+
+        // Pre-calculated modular inverses modulo 26 for coprime values
+        const MOD_INVERSES_26 = {
+            1: 1, 3: 9, 5: 21, 7: 15, 9: 3, 11: 19,
+            15: 7, 17: 23, 19: 11, 21: 5, 23: 17, 25: 25
+        };
+
+        /**
+         * Mathematical Utility Functions
+         */
+        function mod26(n) {
+            return ((n % 26) + 26) % 26;
+        }
+
+        function gcd(a, b) {
+            a = Math.abs(a);
+            b = Math.abs(b);
+            while (b) {
+                let t = b;
+                b = a % b;
+                a = t;
+            }
+            return a;
+        }
+
+        function letterToNum(char) {
+            return char.toUpperCase().charCodeAt(0) - 65;
+        }
+
+        function numToLetter(num) {
+            return String.fromCharCode(mod26(num) + 65);
+        }
+
+        /**
+         * 2x2 Matrix Operations
+         */
+        function calcDet2x2(m) {
+            return m[0][0] * m[1][1] - m[0][1] * m[1][0];
+        }
+
+        function calcAdj2x2(m) {
+            return [
+                [mod26(m[1][1]), mod26(-m[0][1])],
+                [mod26(-m[1][0]), mod26(m[0][0])]
+            ];
+        }
+
+        /**
+         * 3x3 Matrix Operations
+         */
+        function calcDet3x3(m) {
+            const a = m[0][0], b = m[0][1], c = m[0][2];
+            const d = m[1][0], e = m[1][1], f = m[1][2];
+            const g = m[2][0], h = m[2][1], i = m[2][2];
+
+            return a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+        }
+
+        function calcAdj3x3(m) {
+            const a = m[0][0], b = m[0][1], c = m[0][2];
+            const d = m[1][0], e = m[1][1], f = m[1][2];
+            const g = m[2][0], h = m[2][1], i = m[2][2];
+
+            // Cofactors matrix transpose
+            const c00 = (e * i - f * h);
+            const c01 = -(d * i - f * g);
+            const c02 = (d * h - e * g);
+
+            const c10 = -(b * i - c * h);
+            const c11 = (a * i - c * g);
+            const c12 = -(a * h - b * g);
+
+            const c20 = (b * f - c * e);
+            const c21 = -(a * f - c * d);
+            const c22 = (a * e - b * d);
+
+            // Transposed adjugate matrix mod 26
+            return [
+                [mod26(c00), mod26(c10), mod26(c20)],
+                [mod26(c01), mod26(c11), mod26(c21)],
+                [mod26(c02), mod26(c12), mod26(c22)]
+            ];
+        }
+
+        /**
+         * Recalculates matrix properties, invertibility, and inverse matrix
+         */
+        function updateMatrixMath() {
+            const size = state.matrixSize;
+            let det = 0;
+            let adj = [];
+
+            if (size === 2) {
+                det = calcDet2x2(state.matrix);
+                adj = calcAdj2x2(state.matrix);
+            } else {
+                det = calcDet3x3(state.matrix);
+                adj = calcAdj3x3(state.matrix);
+            }
+
+            const detMod = mod26(det);
+            const gcdVal = gcd(detMod, 26);
+            const isInvertible = (gcdVal === 1);
+            const invDet = isInvertible ? MOD_INVERSES_26[detMod] : null;
+
+            state.detRaw = det;
+            state.detMod = detMod;
+            state.gcd = gcdVal;
+            state.isInvertible = isInvertible;
+            state.detInv = invDet;
+
+            if (isInvertible) {
+                state.invMatrix = adj.map(row => row.map(val => mod26(val * invDet)));
+            } else {
+                state.invMatrix = null;
+            }
+
+            renderMatrixAnalyticsUI();
+        }
+
+        /**
+         * Renders the matrix inspector status cards and badges
+         */
+        function renderMatrixAnalyticsUI() {
+            document.getElementById('stat-det-raw').innerText = state.detRaw;
+            document.getElementById('stat-det-mod').innerText = state.detMod;
+            document.getElementById('stat-gcd').innerText = state.gcd;
+            document.getElementById('stat-inv-det').innerText = state.detInv !== null ? state.detInv : 'N/A';
+
+            const badge = document.getElementById('invertible-badge');
+            const explanation = document.getElementById('invertibility-explanation');
+            const btnEnc = document.getElementById('btn-encrypt');
+            const btnDec = document.getElementById('btn-decrypt');
+
+            if (state.isInvertible) {
+                badge.className = "px-2.5 py-1 rounded-full text-xs font-sans font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+                badge.innerText = "✓ Invertível Mod 26";
+                explanation.innerHTML = `Como $\\gcd(${state.detMod}, 26) = 1$, o determinante possui inverso modular (${state.detInv}) e a cifra pode ser decifrada normalmente.`;
+                btnEnc.disabled = false;
+                btnDec.disabled = false;
+                btnEnc.classList.remove('opacity-50', 'cursor-not-allowed');
+                btnDec.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                badge.className = "px-2.5 py-1 rounded-full text-xs font-sans font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40";
+                badge.innerText = "✕ Não Invertível";
+                explanation.innerHTML = `<strong class="text-rose-400">Atenção:</strong> Como $\\gcd(${state.detMod}, 26) = ${state.gcd} \\neq 1$, a chave não possui matriz inversa para decifrar. Escolha outra palavra ou altere os valores.`;
+                btnEnc.disabled = true;
+                btnDec.disabled = true;
+                btnEnc.classList.add('opacity-50', 'cursor-not-allowed');
+                btnDec.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        /**
+         * Renders matrix input textboxes dynamically
+         */
+        function renderMatrixInputs() {
+            const container = document.getElementById('matrix-grid-container');
+            const size = state.matrixSize;
+            container.style.gridTemplateColumns = `repeat(${size}, minmax(0, 1fr))`;
+
+            let html = '';
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    const val = state.matrix[r][c];
+                    html += `
+                        <input type="number" min="0" max="25" value="${val}"
+                            onchange="handleCellChange(${r}, ${c}, this.value)"
+                            class="w-12 h-10 text-center font-mono text-sm font-bold bg-white border border-slate-300 rounded-lg text-indigo-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+                    `;
+                }
+            }
+            container.innerHTML = html;
+        }
+
+        /**
+         * Handles individual cell number changes
+         */
+        function handleCellChange(r, c, val) {
+            let num = parseInt(val) || 0;
+            num = mod26(num);
+            state.matrix[r][c] = num;
+
+            // Reconstruct keyword representation
+            let kw = '';
+            const size = state.matrixSize;
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    kw += numToLetter(state.matrix[i][j]);
+                }
+            }
+            state.keyword = kw;
+            document.getElementById('key-word-input').value = kw;
+
+            renderMatrixInputs();
+            updateMatrixMath();
+        }
+
+        /**
+         * Handles keyword text change
+         */
+        function handleKeywordChange(val) {
+            const clean = val.toUpperCase().replace(/[^A-Z]/g, '');
+            state.keyword = clean;
+
+            const reqLen = state.matrixSize * state.matrixSize;
+            if (clean.length >= reqLen) {
+                let idx = 0;
+                for (let r = 0; r < state.matrixSize; r++) {
+                    for (let c = 0; c < state.matrixSize; c++) {
+                        state.matrix[r][c] = letterToNum(clean[idx++]);
+                    }
+                }
+                renderMatrixInputs();
+                updateMatrixMath();
+            }
+        }
+
+        /**
+         * Sets matrix dimension (2x2 or 3x3)
+         */
+        function setMatrixSize(size) {
+            state.matrixSize = size;
+
+            const btn2 = document.getElementById('btn-dim-2');
+            const btn3 = document.getElementById('btn-dim-3');
+            const hint = document.getElementById('key-length-hint');
+
+            if (size === 2) {
+                btn2.className = "px-4 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white shadow-sm transition";
+                btn3.className = "px-4 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition";
+                hint.innerText = "4 letras para 2x2";
+                if (state.matrix.length !== 2) {
+                    state.matrix = [
+                        [7, 8],
+                        [11, 11]
+                    ];
+                    state.keyword = "HILL";
+                    document.getElementById('key-word-input').value = "HILL";
+                }
+            } else {
+                btn3.className = "px-4 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white shadow-sm transition";
+                btn2.className = "px-4 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition";
+                hint.innerText = "9 letras para 3x3";
+                if (state.matrix.length !== 3) {
+                    state.matrix = [
+                        [6, 24, 1],
+                        [13, 16, 2],
+                        [20, 17, 15]
+                    ]; // "GYBNQCURP"
+                    state.keyword = "GYBNQCURP";
+                    document.getElementById('key-word-input').value = "GYBNQCURP";
+                }
+            }
+
+            renderMatrixInputs();
+            updateMatrixMath();
+        }
+
+        /**
+         * Randomizes an invertible key matrix
+         */
+        function randomizeKey() {
+            const size = state.matrixSize;
+            let valid = false;
+            let attempts = 0;
+
+            while (!valid && attempts < 200) {
+                attempts++;
+                let tempMat = [];
+                let kw = '';
+                for (let r = 0; r < size; r++) {
+                    let row = [];
+                    for (let c = 0; c < size; c++) {
+                        let randNum = Math.floor(Math.random() * 26);
+                        row.push(randNum);
+                        kw += numToLetter(randNum);
+                    }
+                    tempMat.push(row);
+                }
+
+                let det = size === 2 ? calcDet2x2(tempMat) : calcDet3x3(tempMat);
+                let detMod = mod26(det);
+                if (gcd(detMod, 26) === 1) {
+                    state.matrix = tempMat;
+                    state.keyword = kw;
+                    valid = true;
+                }
+            }
+
+            if (valid) {
+                document.getElementById('key-word-input').value = state.keyword;
+                renderMatrixInputs();
+                updateMatrixMath();
+                showToast("Nova chave invertível gerada com sucesso!");
+            }
+        }
+
+        /**
+         * Handles Encryption Process
+         */
+        function executeEncryption() {
+            if (!state.isInvertible) {
+                showToast("Chave inválida! O determinante não é coprimo com 26.", "error");
+                return;
+            }
+
+            const textInput = document.getElementById('enc-input-text').value;
+            const padChar = document.getElementById('enc-padding-char').value || 'X';
+            const cleanText = textInput.toUpperCase().replace(/[^A-Z]/g, '');
+
+            if (!cleanText) {
+                showToast("Por favor, digite um texto válido para criptografar.", "warning");
+                return;
+            }
+
+            // UI Spinner Animation
+            const spinner = document.getElementById('enc-spinner');
+            const btnLabel = document.getElementById('enc-btn-label');
+            spinner.classList.remove('hidden');
+            btnLabel.innerText = "Processando Álgebra...";
+
+            setTimeout(() => {
+                const size = state.matrixSize;
+                let paddedText = cleanText;
+
+                // Pad text if not multiple of matrix size
+                while (paddedText.length % size !== 0) {
+                    paddedText += padChar;
+                }
+
+                let ciphertext = '';
+                let stepsLog = [];
+
+                stepsLog.push(`=== INÍCIO DA CRIPTOGRAFIA DE HILL (${size}x${size}) ===`);
+                stepsLog.push(`Texto Limpo: "${cleanText}"`);
+                if (paddedText.length > cleanText.length) {
+                    stepsLog.push(`Padding Aplicado (${padChar}): "${paddedText}"`);
+                }
+                stepsLog.push(`Matriz Chave K = [${state.matrix.map(r => '[' + r.join(',') + ']').join(', ')}]`);
+                stepsLog.push(`--------------------------------------------------`);
+
+                // Process in vector blocks
+                for (let i = 0; i < paddedText.length; i += size) {
+                    let blockChars = paddedText.substring(i, i + size);
+                    let blockNums = blockChars.split('').map(letterToNum);
+                    let resultNums = new Array(size).fill(0);
+
+                    // Row Vector * Matrix Multiplication: C = P x K mod 26
+                    for (let c = 0; c < size; c++) {
+                        let sum = 0;
+                        for (let r = 0; r < size; r++) {
+                            sum += blockNums[r] * state.matrix[r][c];
+                        }
+                        resultNums[c] = mod26(sum);
+                    }
+
+                    let resChars = resultNums.map(numToLetter).join('');
+                    ciphertext += resChars;
+
+                    stepsLog.push(`Bloco ${i / size + 1}: [${blockChars.split('').join(', ')}] -> Nums: [${blockNums.join(', ')}]`);
+                    stepsLog.push(`  P x K mod 26 = [${resultNums.join(', ')}] -> Cifrado: "${resChars}"`);
+                }
+
+                stepsLog.push(`--------------------------------------------------`);
+                stepsLog.push(`RESULTADO FINAL CIFRADO: ${ciphertext}`);
+
+                // Update UI
+                document.getElementById('enc-result-text').innerText = ciphertext;
+                document.getElementById('enc-steps-log').innerHTML = stepsLog.join('\n');
+                
+                // Also pre-fill decryption input for smooth UX
+                document.getElementById('dec-input-text').value = ciphertext;
+
+                spinner.classList.add('hidden');
+                btnLabel.innerText = "Criptografar Mensagem";
+                showToast("Mensagem criptografada com sucesso!");
+            }, 350);
+        }
+
+        /**
+         * Handles Decryption Process
+         */
+        function executeDecryption() {
+            if (!state.isInvertible) {
+                showToast("Não é possível decifrar: Matriz chave não é invertível modulo 26!", "error");
+                return;
+            }
+
+            const textInput = document.getElementById('dec-input-text').value;
+            const cleanText = textInput.toUpperCase().replace(/[^A-Z]/g, '');
+
+            if (!cleanText) {
+                showToast("Por favor, digite o texto cifrado para decriptografar.", "warning");
+                return;
+            }
+
+            const size = state.matrixSize;
+            if (cleanText.length % size !== 0) {
+                showToast(`O texto cifrado deve ter tamanho múltiplo de ${size} para a matriz ${size}x${size}!`, "warning");
+                return;
+            }
+
+            // UI Spinner Animation
+            const spinner = document.getElementById('dec-spinner');
+            const btnLabel = document.getElementById('dec-btn-label');
+            spinner.classList.remove('hidden');
+            btnLabel.innerText = "Calculando Inversa...";
+
+            setTimeout(() => {
+                const invK = state.invMatrix;
+                let plaintext = '';
+                let stepsLog = [];
+
+                stepsLog.push(`=== INÍCIO DA DECRIPTOGRAFIA DE HILL (${size}x${size}) ===`);
+                stepsLog.push(`Texto Cifrado: "${cleanText}"`);
+                stepsLog.push(`det(K) = ${state.detRaw} ≡ ${state.detMod} (mod 26)`);
+                stepsLog.push(`Inverso de det(K)⁻¹ mod 26 = ${state.detInv}`);
+                stepsLog.push(`Matriz Inversa K⁻¹ = [${invK.map(r => '[' + r.join(',') + ']').join(', ')}]`);
+                stepsLog.push(`--------------------------------------------------`);
+
+                // Process vector blocks using inverse matrix
+                for (let i = 0; i < cleanText.length; i += size) {
+                    let blockChars = cleanText.substring(i, i + size);
+                    let blockNums = blockChars.split('').map(letterToNum);
+                    let resultNums = new Array(size).fill(0);
+
+                    // Row Vector * Inverse Matrix Multiplication: P = C x K^-1 mod 26
+                    for (let c = 0; c < size; c++) {
+                        let sum = 0;
+                        for (let r = 0; r < size; r++) {
+                            sum += blockNums[r] * invK[r][c];
+                        }
+                        resultNums[c] = mod26(sum);
+                    }
+
+                    let resChars = resultNums.map(numToLetter).join('');
+                    plaintext += resChars;
+
+                    stepsLog.push(`Bloco ${i / size + 1}: Cifrado [${blockChars.split('').join(', ')}] -> [${blockNums.join(', ')}]`);
+                    stepsLog.push(`  C x K⁻¹ mod 26 = [${resultNums.join(', ')}] -> Decifrado: "${resChars}"`);
+                }
+
+                stepsLog.push(`--------------------------------------------------`);
+                stepsLog.push(`TEXTO ORIGINAL DECRIPTOGRAFADO: ${plaintext}`);
+
+                // Update UI
+                document.getElementById('dec-result-text').innerText = plaintext;
+                document.getElementById('dec-steps-log').innerHTML = stepsLog.join('\n');
+
+                spinner.classList.add('hidden');
+                btnLabel.innerText = "Decriptografar Mensagem";
+                showToast("Mensagem decriptografada com sucesso!");
+            }, 350);
+        }
+
+        /**
+         * Loads pre-configured preset examples
+         */
+        function loadPreset(name) {
+            if (name === 'HILL') {
+                setMatrixSize(2);
+                document.getElementById('key-word-input').value = 'HILL';
+                handleKeywordChange('HILL');
+                document.getElementById('enc-input-text').value = 'HELP';
+                showToast("Exemplo 2x2 ('HILL') carregado!");
+            } else if (name === 'GYBNQCURP') {
+                setMatrixSize(3);
+                document.getElementById('key-word-input').value = 'GYBNQCURP';
+                handleKeywordChange('GYBNQCURP');
+                document.getElementById('enc-input-text').value = 'ACT';
+                showToast("Exemplo 3x3 ('GYBNQCURP') carregado!");
+            }
+        }
+
+        /**
+         * Clipboard Copy Utility
+         */
+        function copyToClipboard(elementId, label) {
+            const text = document.getElementById(elementId).innerText;
+            if (!text || text === '—') return;
+
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast(`${label} copiado para a área de transferência!`);
+            } catch (err) {
+                showToast("Falha ao copiar texto.", "error");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        /**
+         * Toast System for UI Notifications
+         */
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            let bgColor = "bg-slate-900 border-indigo-500 text-white";
+            let icon = `<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
+
+            if (type === "error") {
+                bgColor = "bg-slate-900 border-rose-500 text-white";
+                icon = `<svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
+            } else if (type === "warning") {
+                bgColor = "bg-slate-900 border-amber-500 text-white";
+                icon = `<svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
+            }
+
+            toast.className = `pointer-events-auto flex items-center space-x-2 px-4 py-3 rounded-xl border shadow-xl text-xs font-medium transform transition-all duration-300 translate-y-2 opacity-0 ${bgColor}`;
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            // Animate in
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            // Remove after 3s
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        /**
+         * Initialize App on Window Load
+         */
+        window.onload = function() {
+            // Mobile menu toggle
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileBtn && mobileMenu) {
+                mobileBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Render initial matrix (2x2 HILL)
+            renderMatrixInputs();
+            updateMatrixMath();
+
+            // Run initial sample encryption
+            executeEncryption();
+        };
+    </script>
+</body>
+</html>

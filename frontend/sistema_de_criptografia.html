@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Criptografia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .x-steps-container {
+            display: none; /* Escondido por padrão, ativado via JS */
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen flex flex-col">
+
+    <nav class="bg-indigo-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <svg class="h-8 w-8 text-indigo-300 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <span class="font-bold text-xl tracking-tight">CryptoWeb</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="sistema_de_criptografia.html" class="bg-indigo-900 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">OTP</a>
+                        <a href="cifra_de_cesar.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Cifra de César</a>
+                        <a href="cifra_de_vigenere.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Cifra de Vigenère</a>
+                        <a href="cifra_de_hill.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Cifra de Hill</a>
+                    </div>
+                </div>
+                <!-- Menu Mobile -->
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" class="bg-indigo-700 inline-flex items-center justify-center p-2 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-600 focus:outline-none" aria-controls="mobile-menu" aria-expanded="false">
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+        
+        <div class="mb-10 text-center">
+            <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                One Time Pad (OTP)
+            </h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+                A Cifra de Uso Único (OTP) utiliza uma operação XOR bit a bit entre a mensagem e uma chave secreta. 
+                Abaixo, você pode simular a criptografia e decriptação utilizando números decimais.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Painel Criptografia -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
+                    <h2 class="text-xl font-bold text-indigo-800 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"></path></svg>
+                        Criptografia
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="enc-msg" class="block text-sm font-medium text-gray-700">Mensagem (em Decimal)</label>
+                            <input type="number" id="enc-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="Ex: 65">
+                        </div>
+                        <div>
+                            <label for="enc-key" class="block text-sm font-medium text-gray-700">Chave (em Decimal)</label>
+                            <input type="number" id="enc-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="Ex: 12">
+                        </div>
+                        <button id="btn-encrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                            Criptografar
+                        </button>
+                    </div>
+
+                    <!-- Resultado da Criptografia (Mock) -->
+                    <div id="enc-result-container" class="x-steps-container mt-6 bg-gray-50 rounded-lg p-5 border border-gray-200">
+                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Criptografada (Decimal): <span class="text-indigo-600 text-xl ml-2">77</span></h3>
+                        
+                        <p class="text-sm text-gray-600 mt-4 mb-2 font-semibold">Passos Visuais (Decimal ➔ Binário ➔ XOR):</p>
+                        <div class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner">
+                            <div class="flex justify-between"><span>Mensagem (65):</span> <span>01000001</span></div>
+                            <div class="flex justify-between"><span>Chave (12):</span> <span>00001100</span></div>
+                            <div class="border-b border-gray-600 my-2"></div>
+                            <div class="flex justify-between text-yellow-300 font-bold"><span>XOR Resultado (77):</span> <span>01001101</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel Decriptação -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                <div class="bg-emerald-50 border-b border-emerald-100 px-6 py-4">
+                    <h2 class="text-xl font-bold text-emerald-800 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
+                        Decriptação
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="dec-msg" class="block text-sm font-medium text-gray-700">Mensagem Criptografada (em Decimal)</label>
+                            <input type="number" id="dec-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition" placeholder="Ex: 77">
+                        </div>
+                        <div>
+                            <label for="dec-key" class="block text-sm font-medium text-gray-700">Chave (em Decimal)</label>
+                            <input type="number" id="dec-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition" placeholder="Ex: 12">
+                        </div>
+                        <button id="btn-decrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                            Decriptografar
+                        </button>
+                    </div>
+
+                    <!-- Resultado da Decriptação (Mock) -->
+                    <div id="dec-result-container" class="x-steps-container mt-6 bg-gray-50 rounded-lg p-5 border border-gray-200">
+                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Original (Decimal): <span class="text-emerald-600 text-xl ml-2">65</span></h3>
+                        
+                        <p class="text-sm text-gray-600 mt-4 mb-2 font-semibold">Passos Visuais (Decimal ➔ Binário ➔ XOR):</p>
+                        <div class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner">
+                            <div class="flex justify-between"><span>Msg. Cript. (77):</span> <span>01001101</span></div>
+                            <div class="flex justify-between"><span>Chave (12):</span> <span>00001100</span></div>
+                            <div class="border-b border-gray-600 my-2"></div>
+                            <div class="flex justify-between text-yellow-300 font-bold"><span>XOR Resultado (65):</span> <span>01000001</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const btnEncrypt = document.getElementById('btn-encrypt');
+            const encResultContainer = document.getElementById('enc-result-container');
+            const inputEncMsg = document.getElementById('enc-msg');
+            const inputEncKey = document.getElementById('enc-key');
+
+            const btnDecrypt = document.getElementById('btn-decrypt');
+            const decResultContainer = document.getElementById('dec-result-container');
+            const inputDecMsg = document.getElementById('dec-msg');
+            const inputDecKey = document.getElementById('dec-key');
+
+            // Simulação de clique em Criptografar
+            btnEncrypt.addEventListener('click', () => {
+                // Preenche valores falsos nos inputs se estiverem vazios apenas para a demonstração visual
+                if(!inputEncMsg.value) inputEncMsg.value = 65;
+                if(!inputEncKey.value) inputEncKey.value = 12;
+
+                // Mostra a área de resultado mockada com animação leve
+                encResultContainer.style.display = 'block';
+                encResultContainer.animate([
+                    { opacity: 0, transform: 'translateY(-10px)' },
+                    { opacity: 1, transform: 'translateY(0)' }
+                ], { duration: 300, fill: 'forwards' });
+            });
+
+            // Simulação de clique em Decriptografar
+            btnDecrypt.addEventListener('click', () => {
+                // Preenche valores falsos nos inputs se estiverem vazios apenas para a demonstração visual
+                if(!inputDecMsg.value) inputDecMsg.value = 77;
+                if(!inputDecKey.value) inputDecKey.value = 12;
+
+                // Mostra a área de resultado mockada com animação leve
+                decResultContainer.style.display = 'block';
+                decResultContainer.animate([
+                    { opacity: 0, transform: 'translateY(-10px)' },
+                    { opacity: 1, transform: 'translateY(0)' }
+                ], { duration: 300, fill: 'forwards' });
+            });
+        });
+    </script>
+</body>
+</html>
