@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cifra de Vigenère - CryptoWeb</title>
+    <title>Cifra de Vigenère - Sistema de Criptografia</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -12,14 +12,11 @@
             background-color: #f3f4f6;
         }
         .x-steps-container {
-            display: none;
-        }
-        .toast {
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            display: none; /* Escondido por padrão, ativado via JS */
         }
     </style>
 </head>
-<body class="text-gray-800 antialiased min-h-screen flex flex-col relative">
+<body class="text-gray-800 antialiased min-h-screen flex flex-col">
 
     <nav class="bg-indigo-700 text-white shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,154 +32,138 @@
                         <a href="sistema_de_criptografia.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">OTP</a>
                         <a href="cifra_de_cesar.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Cifra de César</a>
                         <a href="cifra_de_vigenere.html" class="bg-indigo-900 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Cifra de Vigenère</a>
-                        <a href="cifra_de_hill.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Cifra de Hill</button>
+                        <a href="cifra_de_hill.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Cifra de Hill</a>
+                        <a href="ataque_cifra_de_cesar.html" class="text-indigo-200 text-white px-3 py-2 rounded-md text-sm font-medium">Ataque ao César</a>
                     </div>
                 </div>
                 <!-- Menu Mobile -->
                 <div class="-mr-2 flex md:hidden">
-                    <button type="button" id="mobile-menu-btn" class="bg-indigo-700 inline-flex items-center justify-center p-2 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-600 focus:outline-none">
-                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button type="button" class="bg-indigo-700 inline-flex items-center justify-center p-2 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-600 focus:outline-none" aria-controls="mobile-menu" aria-expanded="false">
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                 </div>
             </div>
         </div>
-        
-        <!-- Mobile Dropdown -->
-        <div class="hidden md:hidden bg-indigo-800 px-2 pt-2 pb-3 space-y-1" id="mobile-menu">
-            <a href="sistema_de_criptografia.html" class="block px-3 py-2 rounded-md text-base font-medium text-indigo-200 hover:text-white hover:bg-indigo-600">OTP</a>
-            <a href="cifra_de_cesar.html" class="block px-3 py-2 rounded-md text-base font-medium text-indigo-200 hover:text-white hover:bg-indigo-600">Cifra de César</a>
-            <a href="cifra_de_vigenere.html" class="block px-3 py-2 rounded-md text-base font-medium text-white bg-indigo-900">Cifra de Vigenère</a>
-            <button onclick="showNotice('Cifra de Hill estará disponível em breve!')" class="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-indigo-200 hover:text-white hover:bg-indigo-600">Cifra de Hill</button>
-        </div>
     </nav>
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
-        
+
         <div class="mb-10 text-center">
-            <span class="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-indigo-700 bg-indigo-100 rounded-full mb-3">Cifra Polialfabética</span>
             <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
                 Cifra de Vigenère
             </h1>
-            <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Desenvolvida originalmente por <strong>Giovan Battista Bellaso</strong> em 1553, esta técnica foi erroneamente atribuída mais tarde a <strong>Blaise de Vigenère</strong>. Trata-se de um método de criptografia por substituição polialfabética que utiliza uma palavra ou frase como chave repetida para cifrar o texto de entrada.
+            <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+                Desenvolvida por Giovan Battista Bellaso e atribuída erroneamente a Blaise de Vigenère, é uma cifra polialfabética difícil de quebrar por análise de frequência. Cada letra da mensagem é deslocada de acordo com a letra correspondente da <b>chave</b>, que é repetida até atingir o tamanho da frase.
             </p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
+
             <!-- Painel Criptografia -->
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 flex flex-col justify-between">
-                <div>
-                    <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
-                        <h2 class="text-xl font-bold text-indigo-800 flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"></path>
-                            </svg>
-                            Criptografar Mensagem
-                        </h2>
-                    </div>
-                    <div class="p-6 space-y-4">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
+                    <h2 class="text-xl font-bold text-indigo-800 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"></path></svg>
+                        Criptografia
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
                         <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label for="enc-msg" class="block text-sm font-medium text-gray-700">Mensagem Claro</label>
-                                <span id="enc-word-badge" class="text-xs px-2 py-0.5 rounded font-medium bg-amber-100 text-amber-800">
-                                    Mínimo 4 palavras
-                                </span>
-                            </div>
-                            <textarea id="enc-msg" rows="3" class="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition resize-none uppercase" placeholder="Ex: A criptografia e muito importante para seguranca"></textarea>
-                            <p id="enc-word-err" class="hidden text-xs text-red-600 mt-1">A mensagem precisa ter no mínimo 4 palavras.</p>
+                            <label for="enc-msg" class="block text-sm font-medium text-gray-700">Mensagem (Frase com no mínimo 4 palavras)</label>
+                            <input type="text" id="enc-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition uppercase" placeholder="Ex: ATAQUE AO AMANHECER NA PRAIA">
+                            <p id="enc-msg-error" class="hidden mt-1 text-sm text-red-600">A mensagem deve conter no mínimo quatro palavras.</p>
                         </div>
                         <div>
                             <label for="enc-key" class="block text-sm font-medium text-gray-700">Chave (Palavra ou Frase)</label>
-                            <input type="text" id="enc-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition uppercase" placeholder="Ex: SEGREDO">
+                            <input type="text" id="enc-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition uppercase" placeholder="Ex: LIMAO">
                         </div>
-                        <button id="btn-encrypt" class="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                            <span id="btn-enc-text">Criptografar</span>
-                            <svg id="btn-enc-spinner" class="hidden animate-spin ml-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
+                        <button id="btn-encrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                            Criptografar
                         </button>
                     </div>
-                </div>
 
-                <!-- Resultado Criptografia -->
-                <div class="p-6 pt-0">
-                    <div id="enc-result-container" class="x-steps-container bg-gray-50 rounded-lg p-5 border border-gray-200">
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wide">Mensagem Criptografada:</h3>
-                            <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-mono">STATUS: 200 OK</span>
+                    <!-- Resultado da Criptografia (Mock) -->
+                    <div id="enc-result-container" class="x-steps-container mt-6 bg-gray-50 rounded-lg p-5 border border-gray-200">
+                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Criptografada: <span class="text-indigo-600 text-xl ml-2 tracking-widest break-all">LBMCYP MA MYMHKTSCB YM BDMMM</span></h3>
+
+                        <p class="text-sm text-gray-600 mt-4 mb-2 font-semibold">Passos Visuais (Chave repetida ➔ Deslocamento):</p>
+                        <div class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner">
+                            <div class="flex justify-between gap-4"><span>Mensagem:</span> <span class="tracking-widest">ATAQUE AO AMANHECER NA PRAIA</span></div>
+                            <div class="flex justify-between gap-4"><span>Chave repetida:</span> <span class="tracking-widest">LIMAOL IM AOLIMAOLI MA OLIMA</span></div>
+                            <div class="flex justify-between gap-4"><span>Deslocamentos:</span> <span class="tracking-widest">11 8 12 0 14 ...</span></div>
+                            <div class="border-b border-gray-600 my-2"></div>
+                            <div class="flex justify-between gap-4 text-yellow-300 font-bold"><span>Resultado:</span> <span class="tracking-widest">LBMCYP MA MYMHKTSCB YM BDMMM</span></div>
                         </div>
-                        <div id="enc-output-text" class="text-indigo-600 font-mono text-lg font-bold break-all bg-white p-3 rounded border border-indigo-100 mb-4 shadow-sm">
-                            S UWOWVRWYDME I QYKXU MTYUKWERXW
-                        </div>
-                        
-                        <p class="text-xs text-gray-600 mb-2 font-semibold uppercase tracking-wider">Visualização da Repetição da Chave:</p>
-                        <div class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-xs overflow-x-auto shadow-inner space-y-1.5 leading-relaxed">
-                            <div class="flex flex-col"><span class="text-gray-500">PLAIN TEXT:</span><span id="enc-vis-plain" class="text-white">A CRIPTOGRAFIA E MUITO IMPORTANTE</span></div>
-                            <div class="flex flex-col"><span class="text-gray-500">KEY REPEATED:</span><span id="enc-vis-key" class="text-yellow-300">S EGREDOSEGRE D OSEGR EDOSEGREDO</span></div>
-                            <div class="border-b border-gray-700 my-1"></div>
-                            <div class="flex flex-col"><span class="text-gray-500">CIPHERTEXT:</span><span id="enc-vis-cipher" class="text-emerald-400 font-bold">S UWOWVRWYDME I QYKXU MTYUKWERXW</span></div>
+
+                        <p class="text-sm text-gray-600 mt-4 mb-2 font-semibold">Detalhe letra a letra (Mensagem + Chave ➔ Cifrada):</p>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm font-mono text-center border border-gray-200 rounded-md bg-white">
+                                <thead class="bg-indigo-50 text-indigo-800">
+                                    <tr><th class="px-3 py-2">Msg</th><th class="px-3 py-2">Chave</th><th class="px-3 py-2">Cálculo</th><th class="px-3 py-2">Cifrada</th></tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr><td class="px-3 py-1">A (0)</td><td class="px-3 py-1">L (11)</td><td class="px-3 py-1">(0+11) mod 26 = 11</td><td class="px-3 py-1 font-bold text-indigo-600">L</td></tr>
+                                    <tr><td class="px-3 py-1">T (19)</td><td class="px-3 py-1">I (8)</td><td class="px-3 py-1">(19+8) mod 26 = 1</td><td class="px-3 py-1 font-bold text-indigo-600">B</td></tr>
+                                    <tr><td class="px-3 py-1">A (0)</td><td class="px-3 py-1">M (12)</td><td class="px-3 py-1">(0+12) mod 26 = 12</td><td class="px-3 py-1 font-bold text-indigo-600">M</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Painel Decriptação -->
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 flex flex-col justify-between">
-                <div>
-                    <div class="bg-emerald-50 border-b border-emerald-100 px-6 py-4">
-                        <h2 class="text-xl font-bold text-emerald-800 flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
-                            </svg>
-                            Decriptargar Mensagem
-                        </h2>
-                    </div>
-                    <div class="p-6 space-y-4">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                <div class="bg-emerald-50 border-b border-emerald-100 px-6 py-4">
+                    <h2 class="text-xl font-bold text-emerald-800 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
+                        Decriptação
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
                         <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label for="dec-msg" class="block text-sm font-medium text-gray-700">Mensagem Criptografada</label>
-                                <span id="dec-word-badge" class="text-xs px-2 py-0.5 rounded font-medium bg-amber-100 text-amber-800">
-                                    Mínimo 4 palavras
-                                </span>
-                            </div>
-                            <textarea id="dec-msg" rows="3" class="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition resize-none uppercase" placeholder="Ex: S UWOWVRWYDME I QYKXU MTYUKWERXW"></textarea>
-                            <p id="dec-word-err" class="hidden text-xs text-red-600 mt-1">A mensagem precisa ter no mínimo 4 palavras.</p>
+                            <label for="dec-msg" class="block text-sm font-medium text-gray-700">Mensagem Criptografada (Frase)</label>
+                            <input type="text" id="dec-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition uppercase" placeholder="Ex: LBMCYP MA MYMHKTSCB YM BDMMM">
+                            <p id="dec-msg-error" class="hidden mt-1 text-sm text-red-600">A mensagem deve conter no mínimo quatro palavras.</p>
                         </div>
                         <div>
                             <label for="dec-key" class="block text-sm font-medium text-gray-700">Chave (Palavra ou Frase)</label>
-                            <input type="text" id="dec-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition uppercase" placeholder="Ex: SEGREDO">
+                            <input type="text" id="dec-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition uppercase" placeholder="Ex: LIMAO">
                         </div>
-                        <button id="btn-decrypt" class="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
-                            <span id="btn-dec-text">Decriptografar</span>
-                            <svg id="btn-dec-spinner" class="hidden animate-spin ml-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
+                        <button id="btn-decrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                            Decriptografar
                         </button>
                     </div>
-                </div>
 
-                <!-- Resultado Decriptação -->
-                <div class="p-6 pt-0">
-                    <div id="dec-result-container" class="x-steps-container bg-gray-50 rounded-lg p-5 border border-gray-200">
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wide">Mensagem Original Recomposta:</h3>
-                            <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-mono">STATUS: 200 OK</span>
+                    <!-- Resultado da Decriptação (Mock) -->
+                    <div id="dec-result-container" class="x-steps-container mt-6 bg-gray-50 rounded-lg p-5 border border-gray-200">
+                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Original: <span class="text-emerald-600 text-xl ml-2 tracking-widest break-all">ATAQUE AO AMANHECER NA PRAIA</span></h3>
+
+                        <p class="text-sm text-gray-600 mt-4 mb-2 font-semibold">Passos Visuais (Chave repetida ➔ Deslocamento inverso):</p>
+                        <div class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner">
+                            <div class="flex justify-between gap-4"><span>Msg. Cript.:</span> <span class="tracking-widest">LBMCYP MA MYMHKTSCB YM BDMMM</span></div>
+                            <div class="flex justify-between gap-4"><span>Chave repetida:</span> <span class="tracking-widest">LIMAOL IM AOLIMAOLI MA OLIMA</span></div>
+                            <div class="flex justify-between gap-4"><span>Deslocamentos:</span> <span class="tracking-widest">-11 -8 -12 -0 -14 ...</span></div>
+                            <div class="border-b border-gray-600 my-2"></div>
+                            <div class="flex justify-between gap-4 text-yellow-300 font-bold"><span>Resultado:</span> <span class="tracking-widest">ATAQUE AO AMANHECER NA PRAIA</span></div>
                         </div>
-                        <div id="dec-output-text" class="text-emerald-700 font-mono text-lg font-bold break-all bg-white p-3 rounded border border-emerald-100 mb-4 shadow-sm">
-                            A CRIPTOGRAFIA E MUITO IMPORTANTE
-                        </div>
-                        
-                        <p class="text-xs text-gray-600 mb-2 font-semibold uppercase tracking-wider">Visualização da Operação Inversa:</p>
-                        <div class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-xs overflow-x-auto shadow-inner space-y-1.5 leading-relaxed">
-                            <div class="flex flex-col"><span class="text-gray-500">CIPHERTEXT:</span><span id="dec-vis-cipher" class="text-white">S UWOWVRWYDME I QYKXU MTYUKWERXW</span></div>
-                            <div class="flex flex-col"><span class="text-gray-500">KEY REPEATED:</span><span id="dec-vis-key" class="text-yellow-300">S EGREDOSEGRE D OSEGR EDOSEGREDO</span></div>
-                            <div class="border-b border-gray-700 my-1"></div>
-                            <div class="flex flex-col"><span class="text-gray-500">DECRYPTED TEXT:</span><span id="dec-vis-plain" class="text-emerald-400 font-bold">A CRIPTOGRAFIA E MUITO IMPORTANTE</span></div>
+
+                        <p class="text-sm text-gray-600 mt-4 mb-2 font-semibold">Detalhe letra a letra (Cifrada − Chave ➔ Original):</p>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm font-mono text-center border border-gray-200 rounded-md bg-white">
+                                <thead class="bg-emerald-50 text-emerald-800">
+                                    <tr><th class="px-3 py-2">Cifrada</th><th class="px-3 py-2">Chave</th><th class="px-3 py-2">Cálculo</th><th class="px-3 py-2">Original</th></tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr><td class="px-3 py-1">L (11)</td><td class="px-3 py-1">L (11)</td><td class="px-3 py-1">(11−11) mod 26 = 0</td><td class="px-3 py-1 font-bold text-emerald-600">A</td></tr>
+                                    <tr><td class="px-3 py-1">B (1)</td><td class="px-3 py-1">I (8)</td><td class="px-3 py-1">(1−8) mod 26 = 19</td><td class="px-3 py-1 font-bold text-emerald-600">T</td></tr>
+                                    <tr><td class="px-3 py-1">M (12)</td><td class="px-3 py-1">M (12)</td><td class="px-3 py-1">(12−12) mod 26 = 0</td><td class="px-3 py-1 font-bold text-emerald-600">A</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -191,278 +172,62 @@
         </div>
     </main>
 
-    <div id="toast-notification" class="fixed bottom-5 right-5 bg-gray-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 opacity-0 pointer-events-none transform translate-y-2 toast z-50">
-        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <span id="toast-message" class="text-sm font-medium">Notificação</span>
-    </div>
-
-    <footer class="bg-white border-t border-gray-200 mt-auto">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <p class="text-center text-sm text-gray-500">
-                &copy; 2026 CryptoWeb. Sistema educacional de demonstração de Criptografia.
-            </p>
-        </div>
-    </footer>
-
     <script>
-        // API REST Mock endpoints simulation
-        const API_BASE_URL = '/api/v1/vigenere';
-
-        /**
-         * Simulates a REST API call to encrypt data using Vigenère cipher.
-         * Ready for future real API integration (e.g., fetch(API_BASE_URL + '/encrypt', {...}))
-         */
-        async function encryptAPI(payload) {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    // Mock response generation matching inputs
-                    const msg = payload.message.trim().toUpperCase();
-                    const key = (payload.key || 'SEGREDO').trim().toUpperCase();
-                    
-                    // Simple mock visual repeat alignment algorithm for frontend presentation
-                    let expandedKey = '';
-                    let keyIdx = 0;
-                    for (let i = 0; i < msg.length; i++) {
-                        if (/[A-Z]/.test(msg[i])) {
-                            expandedKey += key[keyIdx % key.length];
-                            keyIdx++;
-                        } else {
-                            expandedKey += msg[i];
-                        }
-                    }
-
-                    resolve({
-                        status: 200,
-                        data: {
-                            originalMessage: msg,
-                            key: key,
-                            expandedKey: expandedKey,
-                            ciphertext: msg.split('').map((char, i) => {
-                                if (/[A-Z]/.test(char)) {
-                                    const p = char.charCodeAt(0) - 65;
-                                    const k = expandedKey[i].charCodeAt(0) - 65;
-                                    return String.fromCharCode(((p + k) % 26) + 65);
-                                }
-                                return char;
-                            }).join('')
-                        }
-                    });
-                }, 400); // 400ms delay to simulate network latency
-            });
-        }
-
-        /**
-         * Simulates a REST API call to decrypt data using Vigenère cipher.
-         */
-        async function decryptAPI(payload) {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    const cipher = payload.message.trim().toUpperCase();
-                    const key = (payload.key || 'SEGREDO').trim().toUpperCase();
-                    
-                    let expandedKey = '';
-                    let keyIdx = 0;
-                    for (let i = 0; i < cipher.length; i++) {
-                        if (/[A-Z]/.test(cipher[i])) {
-                            expandedKey += key[keyIdx % key.length];
-                            keyIdx++;
-                        } else {
-                            expandedKey += cipher[i];
-                        }
-                    }
-
-                    resolve({
-                        status: 200,
-                        data: {
-                            ciphertext: cipher,
-                            key: key,
-                            expandedKey: expandedKey,
-                            decryptedText: cipher.split('').map((char, i) => {
-                                if (/[A-Z]/.test(char)) {
-                                    const c = char.charCodeAt(0) - 65;
-                                    const k = expandedKey[i].charCodeAt(0) - 65;
-                                    return String.fromCharCode(((c - k + 26) % 26) + 65);
-                                }
-                                return char;
-                            }).join('')
-                        }
-                    });
-                }, 400);
-            });
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            // Navigation Mobile Toggle
-            const mobileBtn = document.getElementById('mobile-menu-btn');
-            const mobileMenu = document.getElementById('mobile-menu');
-            if (mobileBtn && mobileMenu) {
-                mobileBtn.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
-                });
-            }
 
-            // Word counter utility
-            function getWordCount(str) {
-                return str.trim().split(/\s+/).filter(word => word.length > 0).length;
-            }
-
-            // --- Criptografia logic ---
             const btnEncrypt = document.getElementById('btn-encrypt');
-            const encMsgInput = document.getElementById('enc-msg');
-            const encKeyInput = document.getElementById('enc-key');
             const encResultContainer = document.getElementById('enc-result-container');
-            const encWordErr = document.getElementById('enc-word-err');
-            const encWordBadge = document.getElementById('enc-word-badge');
+            const inputEncMsg = document.getElementById('enc-msg');
+            const inputEncKey = document.getElementById('enc-key');
+            const encMsgError = document.getElementById('enc-msg-error');
 
-            // Live validation badge check
-            encMsgInput.addEventListener('input', () => {
-                const count = getWordCount(encMsgInput.value);
-                if (count >= 4) {
-                    encWordBadge.className = "text-xs px-2 py-0.5 rounded font-medium bg-emerald-100 text-emerald-800";
-                    encWordBadge.textContent = `${count} palavras (Válido)`;
-                    encWordErr.classList.add('hidden');
-                } else {
-                    encWordBadge.className = "text-xs px-2 py-0.5 rounded font-medium bg-amber-100 text-amber-800";
-                    encWordBadge.textContent = `${count}/4 palavras`;
-                }
-            });
-
-            btnEncrypt.addEventListener('click', async () => {
-                let messageVal = encMsgInput.value;
-                let keyVal = encKeyInput.value;
-
-                // Fallback dummies if empty
-                if (!messageVal.trim()) {
-                    messageVal = 'A CRIPTOGRAFIA E MUITO IMPORTANTE PARA SEGURANCA';
-                    encMsgInput.value = messageVal;
-                }
-                if (!keyVal.trim()) {
-                    keyVal = 'SEGREDO';
-                    encKeyInput.value = keyVal;
-                }
-
-                // Check 4-word constraint
-                if (getWordCount(messageVal) < 4) {
-                    encWordErr.classList.remove('hidden');
-                    return;
-                } else {
-                    encWordErr.classList.add('hidden');
-                }
-
-                // Loading UI
-                document.getElementById('btn-enc-text').textContent = 'Processando...';
-                document.getElementById('btn-enc-spinner').classList.remove('hidden');
-                btnEncrypt.disabled = true;
-
-                try {
-                    // Call API Mock
-                    const response = await encryptAPI({ message: messageVal, key: keyVal });
-                    const res = response.data;
-
-                    // Update DOM
-                    document.getElementById('enc-output-text').textContent = res.ciphertext;
-                    document.getElementById('enc-vis-plain').textContent = res.originalMessage;
-                    document.getElementById('enc-vis-key').textContent = res.expandedKey;
-                    document.getElementById('enc-vis-cipher').textContent = res.ciphertext;
-
-                    // Display container with animation
-                    encResultContainer.style.display = 'block';
-                    encResultContainer.animate([
-                        { opacity: 0, transform: 'translateY(-8px)' },
-                        { opacity: 1, transform: 'translateY(0)' }
-                    ], { duration: 300, fill: 'forwards' });
-
-                } catch (err) {
-                    showNotice('Erro ao processar a requisição.');
-                } finally {
-                    document.getElementById('btn-enc-text').textContent = 'Criptografar';
-                    document.getElementById('btn-enc-spinner').classList.add('hidden');
-                    btnEncrypt.disabled = false;
-                }
-            });
-
-            // --- Decriptação logic ---
             const btnDecrypt = document.getElementById('btn-decrypt');
-            const decMsgInput = document.getElementById('dec-msg');
-            const decKeyInput = document.getElementById('dec-key');
             const decResultContainer = document.getElementById('dec-result-container');
-            const decWordErr = document.getElementById('dec-word-err');
-            const decWordBadge = document.getElementById('dec-word-badge');
+            const inputDecMsg = document.getElementById('dec-msg');
+            const inputDecKey = document.getElementById('dec-key');
+            const decMsgError = document.getElementById('dec-msg-error');
 
-            decMsgInput.addEventListener('input', () => {
-                const count = getWordCount(decMsgInput.value);
-                if (count >= 4) {
-                    decWordBadge.className = "text-xs px-2 py-0.5 rounded font-medium bg-emerald-100 text-emerald-800";
-                    decWordBadge.textContent = `${count} palavras (Válido)`;
-                    decWordErr.classList.add('hidden');
-                } else {
-                    decWordBadge.className = "text-xs px-2 py-0.5 rounded font-medium bg-amber-100 text-amber-800";
-                    decWordBadge.textContent = `${count}/4 palavras`;
+            // Valida o mínimo de 4 palavras (apenas se o campo estiver preenchido)
+            const hasMinWords = (v) => v.trim().split(/\s+/).filter(Boolean).length >= 4;
+
+            function show(container) {
+                container.style.display = 'block';
+                container.animate([
+                    { opacity: 0, transform: 'translateY(-10px)' },
+                    { opacity: 1, transform: 'translateY(0)' }
+                ], { duration: 300, fill: 'forwards' });
+            }
+
+            // Simulação de clique em Criptografar
+            btnEncrypt.addEventListener('click', () => {
+                // Preenche valores falsos nos inputs se estiverem vazios apenas para a demonstração visual
+                if (!inputEncMsg.value) inputEncMsg.value = 'ATAQUE AO AMANHECER NA PRAIA';
+                if (!inputEncKey.value) inputEncKey.value = 'LIMAO';
+
+                if (!hasMinWords(inputEncMsg.value)) {
+                    encMsgError.classList.remove('hidden');
+                    encResultContainer.style.display = 'none';
+                    return;
                 }
+                encMsgError.classList.add('hidden');
+                show(encResultContainer);
             });
 
-            btnDecrypt.addEventListener('click', async () => {
-                let messageVal = decMsgInput.value;
-                let keyVal = decKeyInput.value;
+            // Simulação de clique em Decriptografar
+            btnDecrypt.addEventListener('click', () => {
+                // Preenche valores falsos nos inputs se estiverem vazios apenas para a demonstração visual
+                if (!inputDecMsg.value) inputDecMsg.value = 'LBMCYP MA MYMHKTSCB YM BDMMM';
+                if (!inputDecKey.value) inputDecKey.value = 'LIMAO';
 
-                if (!messageVal.trim()) {
-                    messageVal = 'S UWOWVRWYDME I QYKXU MTYUKWERXW';
-                    decMsgInput.value = messageVal;
-                }
-                if (!keyVal.trim()) {
-                    keyVal = 'SEGREDO';
-                    decKeyInput.value = keyVal;
-                }
-
-                if (getWordCount(messageVal) < 4) {
-                    decWordErr.classList.remove('hidden');
+                if (!hasMinWords(inputDecMsg.value)) {
+                    decMsgError.classList.remove('hidden');
+                    decResultContainer.style.display = 'none';
                     return;
-                } else {
-                    decWordErr.classList.add('hidden');
                 }
-
-                document.getElementById('btn-dec-text').textContent = 'Processando...';
-                document.getElementById('btn-dec-spinner').classList.remove('hidden');
-                btnDecrypt.disabled = true;
-
-                try {
-                    const response = await decryptAPI({ message: messageVal, key: keyVal });
-                    const res = response.data;
-
-                    document.getElementById('dec-output-text').textContent = res.decryptedText;
-                    document.getElementById('dec-vis-cipher').textContent = res.ciphertext;
-                    document.getElementById('dec-vis-key').textContent = res.expandedKey;
-                    document.getElementById('dec-vis-plain').textContent = res.decryptedText;
-
-                    decResultContainer.style.display = 'block';
-                    decResultContainer.animate([
-                        { opacity: 0, transform: 'translateY(-8px)' },
-                        { opacity: 1, transform: 'translateY(0)' }
-                    ], { duration: 300, fill: 'forwards' });
-
-                } catch (err) {
-                    showNotice('Erro ao processar a decriptação.');
-                } finally {
-                    document.getElementById('btn-dec-text').textContent = 'Decriptografar';
-                    document.getElementById('btn-dec-spinner').classList.add('hidden');
-                    btnDecrypt.disabled = false;
-                }
+                decMsgError.classList.add('hidden');
+                show(decResultContainer);
             });
         });
-
-        // Global Toast Notification Helper
-        function showNotice(msg) {
-            const toast = document.getElementById('toast-notification');
-            const toastMsg = document.getElementById('toast-message');
-            toastMsg.textContent = msg;
-            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
-            
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
-            }, 3000);
-        }
     </script>
 </body>
 </html>
