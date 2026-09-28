@@ -12,7 +12,7 @@
             background-color: #f3f4f6;
         }
         .x-steps-container {
-            display: none; /* Escondido por padrão, ativado via JS */
+            display: none; /* Escondido por padrão, exibido via JS após a resposta da API */
         }
     </style>
 </head>
@@ -29,12 +29,12 @@
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="sistema_de_criptografia.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">OTP</a>
-                        <a href="cifra_de_cesar.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Cifra de César</a>
+                        <a href="sistema_de_criptografia.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white transition px-3 py-2 rounded-md text-sm font-medium">OTP</a>
+                        <a href="cifra_de_cesar.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white transition px-3 py-2 rounded-md text-sm font-medium">Cifra de César</a>
                         <a href="cifra_de_vigenere.html" class="bg-indigo-900 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Cifra de Vigenère</a>
-                        <a href="cifra_de_hill.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Cifra de Hill</a>
-                        <a href="ataque_cifra_de_cesar.html" class="text-indigo-200 text-white px-3 py-2 rounded-md text-sm font-medium">Ataque ao César</a>
-                    </div>
+                        <a href="cifra_de_hill.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white transition px-3 py-2 rounded-md text-sm font-medium">Cifra de Hill</a>
+                        <a href="ataque_cifra_de_cesar.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white transition px-3 py-2 rounded-md text-sm font-medium">Ataque ao César</a>
+                        </div>
                 </div>
                 <!-- Menu Mobile -->
                 <div class="-mr-2 flex md:hidden">
@@ -60,8 +60,6 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-            <!-- Painel Criptografia -->
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
                 <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
                     <h2 class="text-xl font-bold text-indigo-800 flex items-center">
@@ -71,51 +69,20 @@
                 </div>
                 <div class="p-6">
                     <div class="space-y-4">
-                        <div>
-                            <label for="enc-msg" class="block text-sm font-medium text-gray-700">Mensagem (Frase com no mínimo 4 palavras)</label>
-                            <input type="text" id="enc-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition uppercase" placeholder="Ex: ATAQUE AO AMANHECER NA PRAIA">
-                            <p id="enc-msg-error" class="hidden mt-1 text-sm text-red-600">A mensagem deve conter no mínimo quatro palavras.</p>
-                        </div>
-                        <div>
-                            <label for="enc-key" class="block text-sm font-medium text-gray-700">Chave (Palavra ou Frase)</label>
-                            <input type="text" id="enc-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition uppercase" placeholder="Ex: LIMAO">
-                        </div>
-                        <button id="btn-encrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                            Criptografar
-                        </button>
+<div><label for="enc-msg" class="block text-sm font-medium text-gray-700">Mensagem (Frase com no mínimo 4 palavras)</label><input type="text" id="enc-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition uppercase" placeholder="Ex: ATAQUE AO AMANHECER NA PRAIA"></div>
+<div><label for="enc-key" class="block text-sm font-medium text-gray-700">Chave (Palavra ou Frase)</label><input type="text" id="enc-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition uppercase" placeholder="Ex: LIMAO"></div>
+                        <button id="btn-encrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-60 disabled:cursor-wait">Criptografar</button>
+                        <p id="enc-error" class="hidden text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></p>
                     </div>
-
-                    <!-- Resultado da Criptografia (Mock) -->
                     <div id="enc-result-container" class="x-steps-container mt-6 bg-gray-50 rounded-lg p-5 border border-gray-200">
-                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Criptografada: <span class="text-indigo-600 text-xl ml-2 tracking-widest break-all">LBMCYP MA MYMHKTSCB YM BDMMM</span></h3>
-
-                        <p class="text-sm text-gray-600 mt-4 mb-2 font-semibold">Passos Visuais (Chave repetida ➔ Deslocamento):</p>
-                        <div class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner">
-                            <div class="flex justify-between gap-4"><span>Mensagem:</span> <span class="tracking-widest">ATAQUE AO AMANHECER NA PRAIA</span></div>
-                            <div class="flex justify-between gap-4"><span>Chave repetida:</span> <span class="tracking-widest">LIMAOL IM AOLIMAOLI MA OLIMA</span></div>
-                            <div class="flex justify-between gap-4"><span>Deslocamentos:</span> <span class="tracking-widest">11 8 12 0 14 ...</span></div>
-                            <div class="border-b border-gray-600 my-2"></div>
-                            <div class="flex justify-between gap-4 text-yellow-300 font-bold"><span>Resultado:</span> <span class="tracking-widest">LBMCYP MA MYMHKTSCB YM BDMMM</span></div>
-                        </div>
-
-                        <p class="text-sm text-gray-600 mt-4 mb-2 font-semibold">Detalhe letra a letra (Mensagem + Chave ➔ Cifrada):</p>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full text-sm font-mono text-center border border-gray-200 rounded-md bg-white">
-                                <thead class="bg-indigo-50 text-indigo-800">
-                                    <tr><th class="px-3 py-2">Msg</th><th class="px-3 py-2">Chave</th><th class="px-3 py-2">Cálculo</th><th class="px-3 py-2">Cifrada</th></tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100">
-                                    <tr><td class="px-3 py-1">A (0)</td><td class="px-3 py-1">L (11)</td><td class="px-3 py-1">(0+11) mod 26 = 11</td><td class="px-3 py-1 font-bold text-indigo-600">L</td></tr>
-                                    <tr><td class="px-3 py-1">T (19)</td><td class="px-3 py-1">I (8)</td><td class="px-3 py-1">(19+8) mod 26 = 1</td><td class="px-3 py-1 font-bold text-indigo-600">B</td></tr>
-                                    <tr><td class="px-3 py-1">A (0)</td><td class="px-3 py-1">M (12)</td><td class="px-3 py-1">(0+12) mod 26 = 12</td><td class="px-3 py-1 font-bold text-indigo-600">M</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Criptografada: <span id="enc-out" class="text-indigo-600 text-xl ml-2 tracking-widest break-all"></span></h3>
+                        <p id="enc-sub" class="text-sm text-gray-600 mt-4 mb-2 font-semibold"></p>
+                        <div id="enc-steps" class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner"></div>
+                        <div id="enc-extra" class="mt-4 overflow-x-auto"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Painel Decriptação -->
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
                 <div class="bg-emerald-50 border-b border-emerald-100 px-6 py-4">
                     <h2 class="text-xl font-bold text-emerald-800 flex items-center">
@@ -125,108 +92,83 @@
                 </div>
                 <div class="p-6">
                     <div class="space-y-4">
-                        <div>
-                            <label for="dec-msg" class="block text-sm font-medium text-gray-700">Mensagem Criptografada (Frase)</label>
-                            <input type="text" id="dec-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition uppercase" placeholder="Ex: LBMCYP MA MYMHKTSCB YM BDMMM">
-                            <p id="dec-msg-error" class="hidden mt-1 text-sm text-red-600">A mensagem deve conter no mínimo quatro palavras.</p>
-                        </div>
-                        <div>
-                            <label for="dec-key" class="block text-sm font-medium text-gray-700">Chave (Palavra ou Frase)</label>
-                            <input type="text" id="dec-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition uppercase" placeholder="Ex: LIMAO">
-                        </div>
-                        <button id="btn-decrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
-                            Decriptografar
-                        </button>
+<div><label for="dec-msg" class="block text-sm font-medium text-gray-700">Mensagem Criptografada (Frase com no mínimo 4 palavras)</label><input type="text" id="dec-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition uppercase" placeholder="Ex: LBMCYP MA MYMHKTSCB YM BDMMM"></div>
+<div><label for="dec-key" class="block text-sm font-medium text-gray-700">Chave (Palavra ou Frase)</label><input type="text" id="dec-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition uppercase" placeholder="Ex: LIMAO"></div>
+                        <button id="btn-decrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors disabled:opacity-60 disabled:cursor-wait">Decriptografar</button>
+                        <p id="dec-error" class="hidden text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></p>
                     </div>
-
-                    <!-- Resultado da Decriptação (Mock) -->
                     <div id="dec-result-container" class="x-steps-container mt-6 bg-gray-50 rounded-lg p-5 border border-gray-200">
-                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Original: <span class="text-emerald-600 text-xl ml-2 tracking-widest break-all">ATAQUE AO AMANHECER NA PRAIA</span></h3>
-
-                        <p class="text-sm text-gray-600 mt-4 mb-2 font-semibold">Passos Visuais (Chave repetida ➔ Deslocamento inverso):</p>
-                        <div class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner">
-                            <div class="flex justify-between gap-4"><span>Msg. Cript.:</span> <span class="tracking-widest">LBMCYP MA MYMHKTSCB YM BDMMM</span></div>
-                            <div class="flex justify-between gap-4"><span>Chave repetida:</span> <span class="tracking-widest">LIMAOL IM AOLIMAOLI MA OLIMA</span></div>
-                            <div class="flex justify-between gap-4"><span>Deslocamentos:</span> <span class="tracking-widest">-11 -8 -12 -0 -14 ...</span></div>
-                            <div class="border-b border-gray-600 my-2"></div>
-                            <div class="flex justify-between gap-4 text-yellow-300 font-bold"><span>Resultado:</span> <span class="tracking-widest">ATAQUE AO AMANHECER NA PRAIA</span></div>
-                        </div>
-
-                        <p class="text-sm text-gray-600 mt-4 mb-2 font-semibold">Detalhe letra a letra (Cifrada − Chave ➔ Original):</p>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full text-sm font-mono text-center border border-gray-200 rounded-md bg-white">
-                                <thead class="bg-emerald-50 text-emerald-800">
-                                    <tr><th class="px-3 py-2">Cifrada</th><th class="px-3 py-2">Chave</th><th class="px-3 py-2">Cálculo</th><th class="px-3 py-2">Original</th></tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100">
-                                    <tr><td class="px-3 py-1">L (11)</td><td class="px-3 py-1">L (11)</td><td class="px-3 py-1">(11−11) mod 26 = 0</td><td class="px-3 py-1 font-bold text-emerald-600">A</td></tr>
-                                    <tr><td class="px-3 py-1">B (1)</td><td class="px-3 py-1">I (8)</td><td class="px-3 py-1">(1−8) mod 26 = 19</td><td class="px-3 py-1 font-bold text-emerald-600">T</td></tr>
-                                    <tr><td class="px-3 py-1">M (12)</td><td class="px-3 py-1">M (12)</td><td class="px-3 py-1">(12−12) mod 26 = 0</td><td class="px-3 py-1 font-bold text-emerald-600">A</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Original: <span id="dec-out" class="text-emerald-600 text-xl ml-2 tracking-widest break-all"></span></h3>
+                        <p id="dec-sub" class="text-sm text-gray-600 mt-4 mb-2 font-semibold"></p>
+                        <div id="dec-steps" class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner"></div>
+                        <div id="dec-extra" class="mt-4 overflow-x-auto"></div>
                     </div>
                 </div>
             </div>
-
         </div>
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            const btnEncrypt = document.getElementById('btn-encrypt');
-            const encResultContainer = document.getElementById('enc-result-container');
-            const inputEncMsg = document.getElementById('enc-msg');
-            const inputEncKey = document.getElementById('enc-key');
-            const encMsgError = document.getElementById('enc-msg-error');
+        const API_BASE = 'http://localhost:3000'; // Altere se a API estiver em outro endereço
+        const $ = (id) => document.getElementById(id);
+        const v = (id) => $(id).value;
+        const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-            const btnDecrypt = document.getElementById('btn-decrypt');
-            const decResultContainer = document.getElementById('dec-result-container');
-            const inputDecMsg = document.getElementById('dec-msg');
-            const inputDecKey = document.getElementById('dec-key');
-            const decMsgError = document.getElementById('dec-msg-error');
-
-            // Valida o mínimo de 4 palavras (apenas se o campo estiver preenchido)
-            const hasMinWords = (v) => v.trim().split(/\s+/).filter(Boolean).length >= 4;
-
-            function show(container) {
-                container.style.display = 'block';
-                container.animate([
-                    { opacity: 0, transform: 'translateY(-10px)' },
-                    { opacity: 1, transform: 'translateY(0)' }
-                ], { duration: 300, fill: 'forwards' });
+        async function callApi(path, payload) {
+            let r;
+            try {
+                r = await fetch(API_BASE + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            } catch (e) {
+                throw new Error('Não foi possível conectar à API em ' + API_BASE + '. Verifique se o servidor está no ar (e se o CORS está habilitado).');
             }
+            let d = null;
+            try { d = await r.json(); } catch (e) {}
+            if (!r.ok) throw new Error((d && (d.error || d.message)) || 'Erro de validação (HTTP ' + r.status + '). Confira os dados informados.');
+            return d;
+        }
 
-            // Simulação de clique em Criptografar
-            btnEncrypt.addEventListener('click', () => {
-                // Preenche valores falsos nos inputs se estiverem vazios apenas para a demonstração visual
-                if (!inputEncMsg.value) inputEncMsg.value = 'ATAQUE AO AMANHECER NA PRAIA';
-                if (!inputEncKey.value) inputEncKey.value = 'LIMAO';
+        function render(m, r) {
+            $(m + '-out').textContent = r.out;
+            $(m + '-sub').textContent = r.sub;
+            const line = (a, b, cls) => `<div class="flex justify-between gap-4 ${cls || ''}"><span>${esc(a)}</span> <span class="tracking-widest break-all text-right">${esc(b)}</span></div>`;
+            $(m + '-steps').innerHTML = r.rows.map(x => line(x[0], x[1])).join('') +
+                '<div class="border-b border-gray-600 my-2"></div>' + line(r.final[0], r.final[1], 'text-yellow-300 font-bold');
+            $(m + '-extra').innerHTML = r.extra || '';
+            const c = $(m + '-result-container');
+            c.style.display = 'block';
+            c.animate([{ opacity: 0, transform: 'translateY(-10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 300, fill: 'forwards' });
+        }
 
-                if (!hasMinWords(inputEncMsg.value)) {
-                    encMsgError.classList.remove('hidden');
-                    encResultContainer.style.display = 'none';
-                    return;
-                }
-                encMsgError.classList.add('hidden');
-                show(encResultContainer);
+        function bind(m, btnId, fn) {
+            const btn = $(btnId), label = btn.textContent;
+            btn.addEventListener('click', async () => {
+                const err = $(m + '-error');
+                err.classList.add('hidden');
+                btn.disabled = true; btn.textContent = 'Processando...';
+                try { render(m, await fn()); }
+                catch (e) { err.textContent = e.message; err.classList.remove('hidden'); $(m + '-result-container').style.display = 'none'; }
+                finally { btn.disabled = false; btn.textContent = label; }
             });
+        }
 
-            // Simulação de clique em Decriptografar
-            btnDecrypt.addEventListener('click', () => {
-                // Preenche valores falsos nos inputs se estiverem vazios apenas para a demonstração visual
-                if (!inputDecMsg.value) inputDecMsg.value = 'LBMCYP MA MYMHKTSCB YM BDMMM';
-                if (!inputDecKey.value) inputDecKey.value = 'LIMAO';
-
-                if (!hasMinWords(inputDecMsg.value)) {
-                    decMsgError.classList.remove('hidden');
-                    decResultContainer.style.display = 'none';
-                    return;
-                }
-                decMsgError.classList.add('hidden');
-                show(decResultContainer);
-            });
+        function readInputs(m) {
+            const text = v(m + '-msg').trim().toUpperCase(), key = v(m + '-key').trim().toUpperCase();
+            if (!text || !key) throw new Error('Preencha a mensagem e a chave.');
+            if (text.split(/\s+/).length < 4) throw new Error('A mensagem deve conter no mínimo quatro palavras.');
+            return { text, key };
+        }
+        bind('enc', 'btn-encrypt', async () => {
+            const p = readInputs('enc'), d = await callApi('/api/vigenere/encrypt', p);
+            return { out: d.result, sub: 'Resumo (Mensagem + Chave ➔ Cifrada):',
+                rows: [['Mensagem:', p.text], ['Chave:', p.key]], final: ['Resultado:', d.result] };
+        });
+        bind('dec', 'btn-decrypt', async () => {
+            const p = readInputs('dec'), d = await callApi('/api/vigenere/decrypt', p);
+            return { out: d.result, sub: 'Resumo (Cifrada − Chave ➔ Original):',
+                rows: [['Msg. Cript.:', p.text], ['Chave:', p.key]], final: ['Resultado:', d.result] };
+        });
         });
     </script>
 </body>

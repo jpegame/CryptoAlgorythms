@@ -12,7 +12,7 @@
             background-color: #f3f4f6;
         }
         .x-steps-container {
-            display: none; /* Escondido por padrão, ativado via JS */
+            display: none; /* Escondido por padrão, exibido via JS após a resposta da API */
         }
     </style>
 </head>
@@ -29,12 +29,12 @@
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="sistema_de_criptografia.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">OTP</a>
-                        <a href="cifra_de_cesar.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Cifra de César</a>
-                        <a href="cifra_de_vigenere.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Cifra de Vigenère</a>
+                        <a href="sistema_de_criptografia.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white transition px-3 py-2 rounded-md text-sm font-medium">OTP</a>
+                        <a href="cifra_de_cesar.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white transition px-3 py-2 rounded-md text-sm font-medium">Cifra de César</a>
+                        <a href="cifra_de_vigenere.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white transition px-3 py-2 rounded-md text-sm font-medium">Cifra de Vigenère</a>
                         <a href="cifra_de_hill.html" class="bg-indigo-900 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Cifra de Hill</a>
-                        <a href="ataque_cifra_de_cesar.html" class="text-indigo-200 text-white px-3 py-2 rounded-md text-sm font-medium">Ataque ao César</a>
-                    </div>
+                        <a href="ataque_cifra_de_cesar.html" class="text-indigo-200 hover:bg-indigo-600 hover:text-white transition px-3 py-2 rounded-md text-sm font-medium">Ataque ao César</a>
+                        </div>
                 </div>
                 <!-- Menu Mobile -->
                 <div class="-mr-2 flex md:hidden">
@@ -55,13 +55,11 @@
                 Cifra de Hill
             </h1>
             <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-                A Cifra de Hill é uma cifra de substituição baseada em álgebra linear. A palavra-chave forma uma <b>matriz K</b> (ex.: 9 letras ➔ matriz 3×3), o texto é dividido em blocos e cada bloco é multiplicado por K (mod 26). Na decriptação, utiliza-se a <b>matriz inversa K⁻¹</b>.
+                A Cifra de Hill é uma cifra de substituição baseada em álgebra linear. A <b>matriz chave K</b> (2×2, números inteiros) multiplica blocos de 2 letras do texto (mod 26). Na decriptação, utiliza-se a <b>matriz inversa K⁻¹</b>.
             </p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-            <!-- Painel Criptografia -->
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
                 <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4">
                     <h2 class="text-xl font-bold text-indigo-800 flex items-center">
@@ -71,55 +69,20 @@
                 </div>
                 <div class="p-6">
                     <div class="space-y-4">
-                        <div>
-                            <label for="enc-msg" class="block text-sm font-medium text-gray-700">Mensagem (Palavra ou Frase)</label>
-                            <input type="text" id="enc-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition uppercase" placeholder="Ex: ACT">
-                        </div>
-                        <div>
-                            <label for="enc-key" class="block text-sm font-medium text-gray-700">Chave (Palavra ou Frase)</label>
-                            <input type="text" id="enc-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition uppercase" placeholder="Ex: GYBNQKURP">
-                            <p class="mt-1 text-xs text-gray-500">O tamanho da chave deve formar uma matriz quadrada (4, 9, 16... letras) e ela precisa ser invertível mod 26.</p>
-                        </div>
-                        <button id="btn-encrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                            Criptografar
-                        </button>
+<div><label for="enc-msg" class="block text-sm font-medium text-gray-700">Mensagem (Palavra ou Frase)</label><input type="text" id="enc-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition uppercase" placeholder="Ex: HELLOMATRIX"><p class="mt-1 text-xs text-gray-500">Apenas letras de A a Z são usadas: espaços, acentos e números são removidos. Se o total de letras for ímpar, a API acrescenta um X.</p></div>
+<div><label class="block text-sm font-medium text-gray-700">Chave (Matriz K)</label><p class="mt-1 text-xs text-gray-500">Matriz 2×2</p><div id="enc-matrix" class="mt-3 grid gap-2 max-w-[12rem]"></div><p class="mt-1 text-xs text-gray-500">O determinante da matriz deve ser coprimo de 26 (a API valida).</p></div>
+                        <button id="btn-encrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-60 disabled:cursor-wait">Criptografar</button>
+                        <p id="enc-error" class="hidden text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></p>
                     </div>
-
-                    <!-- Resultado da Criptografia (Mock) -->
                     <div id="enc-result-container" class="x-steps-container mt-6 bg-gray-50 rounded-lg p-5 border border-gray-200">
-                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Criptografada: <span class="text-indigo-600 text-xl ml-2 tracking-widest">POH</span></h3>
-
-                        <p class="text-sm text-gray-600 mt-4 mb-2 font-semibold">Passos Visuais (Texto ➔ Matriz ➔ Multiplicação mod 26):</p>
-                        <div class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner">
-                            <div class="flex justify-between gap-4"><span>Mensagem:</span> <span class="tracking-widest">ACT ➔ [0, 2, 19]</span></div>
-                            <div class="flex justify-between gap-4"><span>Chave:</span> <span class="tracking-widest">GYBNQKURP</span></div>
-                            <div class="my-3 flex items-center justify-center gap-4">
-                                <div class="grid grid-cols-3 gap-x-4 gap-y-1 text-center border-l-2 border-r-2 border-green-400 px-3">
-                                    <span>6</span><span>24</span><span>1</span>
-                                    <span>13</span><span>16</span><span>10</span>
-                                    <span>20</span><span>17</span><span>15</span>
-                                </div>
-                                <span>×</span>
-                                <div class="grid grid-cols-1 gap-y-1 text-center border-l-2 border-r-2 border-green-400 px-3">
-                                    <span>0</span><span>2</span><span>19</span>
-                                </div>
-                                <span>=</span>
-                                <div class="grid grid-cols-1 gap-y-1 text-center border-l-2 border-r-2 border-green-400 px-3">
-                                    <span>67</span><span>222</span><span>319</span>
-                                </div>
-                                <span>mod 26 =</span>
-                                <div class="grid grid-cols-1 gap-y-1 text-center border-l-2 border-r-2 border-yellow-300 text-yellow-300 px-3">
-                                    <span>15</span><span>14</span><span>7</span>
-                                </div>
-                            </div>
-                            <div class="border-b border-gray-600 my-2"></div>
-                            <div class="flex justify-between gap-4 text-yellow-300 font-bold"><span>Resultado:</span> <span class="tracking-widest">[15, 14, 7] ➔ POH</span></div>
-                        </div>
+                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Criptografada: <span id="enc-out" class="text-indigo-600 text-xl ml-2 tracking-widest break-all"></span></h3>
+                        <p id="enc-sub" class="text-sm text-gray-600 mt-4 mb-2 font-semibold"></p>
+                        <div id="enc-steps" class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner"></div>
+                        <div id="enc-extra" class="mt-4 overflow-x-auto"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Painel Decriptação -->
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
                 <div class="bg-emerald-50 border-b border-emerald-100 px-6 py-4">
                     <h2 class="text-xl font-bold text-emerald-800 flex items-center">
@@ -129,98 +92,107 @@
                 </div>
                 <div class="p-6">
                     <div class="space-y-4">
-                        <div>
-                            <label for="dec-msg" class="block text-sm font-medium text-gray-700">Mensagem Criptografada (Palavra ou Frase)</label>
-                            <input type="text" id="dec-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition uppercase" placeholder="Ex: POH">
-                        </div>
-                        <div>
-                            <label for="dec-key" class="block text-sm font-medium text-gray-700">Chave (Palavra ou Frase)</label>
-                            <input type="text" id="dec-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition uppercase" placeholder="Ex: GYBNQKURP">
-                            <p class="mt-1 text-xs text-gray-500">A mesma chave usada na criptografia; a matriz inversa K⁻¹ é calculada a partir dela.</p>
-                        </div>
-                        <button id="btn-decrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
-                            Decriptografar
-                        </button>
+<div><label for="dec-msg" class="block text-sm font-medium text-gray-700">Mensagem Criptografada (Palavra ou Frase)</label><input type="text" id="dec-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition uppercase" placeholder="Ex: PBNMKOWFTBNS"><p class="mt-1 text-xs text-gray-500">Deve ter quantidade par de letras. O resultado pode terminar com o X de preenchimento.</p></div>
+<div><label class="block text-sm font-medium text-gray-700">Chave (Matriz K)</label><p class="mt-1 text-xs text-gray-500">Matriz 2×2</p><div id="dec-matrix" class="mt-3 grid gap-2 max-w-[12rem]"></div><p class="mt-1 text-xs text-gray-500">Use a mesma matriz da criptografia; a API calcula a inversa.</p></div>
+                        <button id="btn-decrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors disabled:opacity-60 disabled:cursor-wait">Decriptografar</button>
+                        <p id="dec-error" class="hidden text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></p>
                     </div>
-
-                    <!-- Resultado da Decriptação (Mock) -->
                     <div id="dec-result-container" class="x-steps-container mt-6 bg-gray-50 rounded-lg p-5 border border-gray-200">
-                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Original: <span class="text-emerald-600 text-xl ml-2 tracking-widest">ACT</span></h3>
-
-                        <p class="text-sm text-gray-600 mt-4 mb-2 font-semibold">Passos Visuais (Matriz Inversa K⁻¹ ➔ Multiplicação mod 26):</p>
-                        <div class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner">
-                            <div class="flex justify-between gap-4"><span>Msg. Cript.:</span> <span class="tracking-widest">POH ➔ [15, 14, 7]</span></div>
-                            <div class="flex justify-between gap-4"><span>Chave:</span> <span class="tracking-widest">GYBNQKURP</span></div>
-                            <div class="flex justify-between gap-4"><span>Inversa (K⁻¹ mod 26):</span> <span>det⁻¹ aplicado</span></div>
-                            <div class="my-3 flex items-center justify-center gap-4">
-                                <div class="grid grid-cols-3 gap-x-4 gap-y-1 text-center border-l-2 border-r-2 border-green-400 px-3">
-                                    <span>8</span><span>5</span><span>10</span>
-                                    <span>21</span><span>8</span><span>21</span>
-                                    <span>21</span><span>12</span><span>8</span>
-                                </div>
-                                <span>×</span>
-                                <div class="grid grid-cols-1 gap-y-1 text-center border-l-2 border-r-2 border-green-400 px-3">
-                                    <span>15</span><span>14</span><span>7</span>
-                                </div>
-                                <span>=</span>
-                                <div class="grid grid-cols-1 gap-y-1 text-center border-l-2 border-r-2 border-green-400 px-3">
-                                    <span>260</span><span>574</span><span>539</span>
-                                </div>
-                                <span>mod 26 =</span>
-                                <div class="grid grid-cols-1 gap-y-1 text-center border-l-2 border-r-2 border-yellow-300 text-yellow-300 px-3">
-                                    <span>0</span><span>2</span><span>19</span>
-                                </div>
-                            </div>
-                            <div class="border-b border-gray-600 my-2"></div>
-                            <div class="flex justify-between gap-4 text-yellow-300 font-bold"><span>Resultado:</span> <span class="tracking-widest">[0, 2, 19] ➔ ACT</span></div>
-                        </div>
+                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Original: <span id="dec-out" class="text-emerald-600 text-xl ml-2 tracking-widest break-all"></span></h3>
+                        <p id="dec-sub" class="text-sm text-gray-600 mt-4 mb-2 font-semibold"></p>
+                        <div id="dec-steps" class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner"></div>
+                        <div id="dec-extra" class="mt-4 overflow-x-auto"></div>
                     </div>
                 </div>
             </div>
-
         </div>
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            const btnEncrypt = document.getElementById('btn-encrypt');
-            const encResultContainer = document.getElementById('enc-result-container');
-            const inputEncMsg = document.getElementById('enc-msg');
-            const inputEncKey = document.getElementById('enc-key');
+        const API_BASE = 'http://localhost:3000'; // Altere se a API estiver em outro endereço
+        const $ = (id) => document.getElementById(id);
+        const v = (id) => $(id).value;
+        const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-            const btnDecrypt = document.getElementById('btn-decrypt');
-            const decResultContainer = document.getElementById('dec-result-container');
-            const inputDecMsg = document.getElementById('dec-msg');
-            const inputDecKey = document.getElementById('dec-key');
+        async function callApi(path, payload) {
+            let r;
+            try {
+                r = await fetch(API_BASE + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            } catch (e) {
+                throw new Error('Não foi possível conectar à API em ' + API_BASE + '. Verifique se o servidor está no ar (e se o CORS está habilitado).');
+            }
+            let d = null;
+            try { d = await r.json(); } catch (e) {}
+            if (!r.ok) throw new Error((d && (d.error || d.message)) || 'Erro de validação (HTTP ' + r.status + '). Confira os dados informados.');
+            return d;
+        }
 
-            // Simulação de clique em Criptografar
-            btnEncrypt.addEventListener('click', () => {
-                // Preenche valores falsos nos inputs se estiverem vazios apenas para a demonstração visual
-                if(!inputEncMsg.value) inputEncMsg.value = 'ACT';
-                if(!inputEncKey.value) inputEncKey.value = 'GYBNQKURP';
+        function render(m, r) {
+            $(m + '-out').textContent = r.out;
+            $(m + '-sub').textContent = r.sub;
+            const line = (a, b, cls) => `<div class="flex justify-between gap-4 ${cls || ''}"><span>${esc(a)}</span> <span class="tracking-widest break-all text-right">${esc(b)}</span></div>`;
+            $(m + '-steps').innerHTML = r.rows.map(x => line(x[0], x[1])).join('') +
+                '<div class="border-b border-gray-600 my-2"></div>' + line(r.final[0], r.final[1], 'text-yellow-300 font-bold');
+            $(m + '-extra').innerHTML = r.extra || '';
+            const c = $(m + '-result-container');
+            c.style.display = 'block';
+            c.animate([{ opacity: 0, transform: 'translateY(-10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 300, fill: 'forwards' });
+        }
 
-                // Mostra a área de resultado mockada com animação leve
-                encResultContainer.style.display = 'block';
-                encResultContainer.animate([
-                    { opacity: 0, transform: 'translateY(-10px)' },
-                    { opacity: 1, transform: 'translateY(0)' }
-                ], { duration: 300, fill: 'forwards' });
+        function bind(m, btnId, fn) {
+            const btn = $(btnId), label = btn.textContent;
+            btn.addEventListener('click', async () => {
+                const err = $(m + '-error');
+                err.classList.add('hidden');
+                btn.disabled = true; btn.textContent = 'Processando...';
+                try { render(m, await fn()); }
+                catch (e) { err.textContent = e.message; err.classList.remove('hidden'); $(m + '-result-container').style.display = 'none'; }
+                finally { btn.disabled = false; btn.textContent = label; }
             });
+        }
 
-            // Simulação de clique em Decriptografar
-            btnDecrypt.addEventListener('click', () => {
-                // Preenche valores falsos nos inputs se estiverem vazios apenas para a demonstração visual
-                if(!inputDecMsg.value) inputDecMsg.value = 'POH';
-                if(!inputDecKey.value) inputDecKey.value = 'GYBNQKURP';
+        const DEFAULTS = { 2: [5, 8, 17, 3] };
+        function buildMatrix(m) {
+            const n = 2, box = $(m + '-matrix');
+            box.style.gridTemplateColumns = `repeat(${n}, minmax(0, 1fr))`;
+            box.innerHTML = '';
+            for (let i = 0; i < n * n; i++) {
+                const c = m === 'enc' ? 'indigo' : 'emerald';
+                box.insertAdjacentHTML('beforeend', `<input type="number" id="${m}-mx-${i}" value="${DEFAULTS[n][i]}" class="w-full px-2 py-2 text-center bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-${c}-500 focus:border-${c}-500 transition">`);
+            }
+        }
+        function getMatrix(m) {
+            const n = 2, M = [];
+            for (let i = 0; i < n; i++) {
+                const row = [];
+                for (let j = 0; j < n; j++) {
+                    const x = parseInt(v(`${m}-mx-${i * n + j}`), 10);
+                    if (isNaN(x)) throw new Error('Preencha todas as posições da matriz com números inteiros.');
+                    row.push(x);
+                }
+                M.push(row);
+            }
+            return M;
+        }
+        ['enc', 'dec'].forEach(m => buildMatrix(m));
 
-                // Mostra a área de resultado mockada com animação leve
-                decResultContainer.style.display = 'block';
-                decResultContainer.animate([
-                    { opacity: 0, transform: 'translateY(-10px)' },
-                    { opacity: 1, transform: 'translateY(0)' }
-                ], { duration: 300, fill: 'forwards' });
-            });
+        function readInputs(m) {
+            const text = v(m + '-msg').trim().toUpperCase();
+            if (!text) throw new Error('Informe a mensagem.');
+            return { text, keyMatrix: getMatrix(m) };
+        }
+        bind('enc', 'btn-encrypt', async () => {
+            const p = readInputs('enc'), d = await callApi('/api/hill/encrypt', p);
+            return { out: d.result, sub: 'Resumo (Texto ➔ Matriz K ➔ Resultado mod 26):',
+                rows: [['Mensagem:', p.text], ['Matriz K:', JSON.stringify(p.keyMatrix)]], final: ['Resultado:', d.result] };
+        });
+        bind('dec', 'btn-decrypt', async () => {
+            const p = readInputs('dec'), d = await callApi('/api/hill/decrypt', p);
+            return { out: d.result, sub: 'Resumo (Texto ➔ Matriz K⁻¹ ➔ Resultado mod 26):',
+                rows: [['Msg. Cript.:', p.text], ['Matriz K:', JSON.stringify(p.keyMatrix)]], final: ['Resultado:', d.result] };
+        });
         });
     </script>
 </body>
