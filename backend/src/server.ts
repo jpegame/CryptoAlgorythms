@@ -8,7 +8,7 @@ const app = express();
 const httpServer = createServer(app);
 
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173"); //IMPORTANTE: mudar pra null já que as páginas são HTML e provavelmente serão abertar como arquivos (file:///)
+  res.header("Access-Control-Allow-Origin", "*"); //IMPORTANTE: mudar pra null já que as páginas são HTML e provavelmente serão abertar como arquivos (file:///)
   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
