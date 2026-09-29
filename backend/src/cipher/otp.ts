@@ -1,54 +1,40 @@
-export function otpEncrypt(
-    text: string,
-    customKey?: string
-): { cipherTextHex: string; keyHex: string } {
-    let keyBytes: number[] = [];
-
-    if (customKey) {
-        if (customKey.length !== text.length) {
-            throw new Error("Para OTP, a chave deve ter exatamente o mesmo tamanho do texto.");
-        }
-        keyBytes = customKey.split("").map((c) => c.charCodeAt(0));
-    } else {
-        for (let i = 0; i < text.length; i++) {
-            keyBytes.push(Math.floor(Math.random() * 256));
-        }
+function validateBytes(values: number[], label: string): void {
+    if (!Array.isArray(values) || values.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) {
+        throw new Error(`${label} deve ser uma lista de inteiros entre 0 e 255.`);
     }
-
-    const cipherHex: string[] = [];
-    const keyHex: string[] = [];
-
-    for (let i = 0; i < text.length; i++) {
-        const textByte = text.charCodeAt(i);
-        const keyByte = keyBytes[i];
-        const cipherByte = textByte ^ keyByte;
-
-        cipherHex.push(cipherByte.toString(16).padStart(2, "0"));
-        keyHex.push(keyByte.toString(16).padStart(2, "0"));
-    }
-
-    return {
-        cipherTextHex: cipherHex.join(""),
-        keyHex: keyHex.join("")
-    };
 }
 
-export function otpDecrypt(cipherTextHex: string, keyHex: string): string {
-    if (cipherTextHex.length !== keyHex.length || cipherTextHex.length % 2 !== 0) {
-        throw new Error("Hexadecimais inválidos ou de tamanhos incompatíveis.");
-    }
+export function otpEncrypt(message: number[], customKey?: number[]): {
+    cipherText: number[]; key: number[]; cipherTextHex: string; keyHex: string;
+} {
+    validateBytes(message, "A mensagem");
+    if (message.length === 0) throw new Error("Informe ao menos um byte para a mensagem.");
 
-    let result = "";
-    for (let i = 0; i < cipherTextHex.length; i += 2) {
-        const cipherByte = parseInt(cipherTextHex.substring(i, i + 2), 16);
-        const keyByte = parseInt(keyHex.substring(i, i + 2), 16);
-
-        if (isNaN(cipherByte) || isNaN(keyByte)) {
-            throw new Error("Conteúdo hexadecimal inválido.");
+    let key: number[];
+    if (customKey !== undefined) {
+        validateBytes(customKey, "A chave");
+        if (customKey.length !== message.length) {
+            throw new Error("Para OTP, a chave deve ter exatamente a mesma quantidade de bytes da mensagem.");
         }
-
-        result += String.fromCharCode(cipherByte ^ keyByte);
+        key = customKey;
+    } else {
+        const random = new Uint8Array(message.length);
+        for (let offset = 0; offset < random.length; offset += 65_536) {
+            globalThis.crypto.getRandomValues(random.subarray(offset, Math.min(offset + 65_536, random.length)));
+        }
+        key = Array.from(random);
     }
 
-    return result;
+    const cipherText = message.map((byte, i) => byte ^ key[i]);
+    const toHex = (bytes: number[]) => bytes.map((byte) => byte.toString(16).padStart(2, "0")).join("");
+    return { cipherText, key, cipherTextHex: toHex(cipherText), keyHex: toHex(key) };
+}
+
+export function otpDecrypt(cipherText: number[], key: number[]): number[] {
+    validateBytes(cipherText, "O texto cifrado");
+    validateBytes(key, "A chave");
+    if (cipherText.length === 0 || cipherText.length !== key.length) {
+        throw new Error("Texto cifrado e chave devem ter a mesma quantidade de bytes, maior que zero.");
+    }
+    return cipherText.map((byte, i) => byte ^ key[i]);
 }

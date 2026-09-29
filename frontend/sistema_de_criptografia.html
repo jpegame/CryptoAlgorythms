@@ -55,7 +55,7 @@
                 One Time Pad (OTP)
             </h1>
             <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-                A Cifra de Uso Único (OTP) utiliza uma operação XOR bit a bit entre a mensagem e uma chave secreta. Abaixo, você pode criptografar um texto (a chave pode ser gerada automaticamente) e decriptar a partir dos valores em hexadecimal.
+                A Cifra de Uso Único (OTP) aplica XOR a bytes representados em decimal. Informe os valores decimais da mensagem e da chave, ou deixe a chave vazia para gerar uma aleatória.
             </p>
         </div>
 
@@ -69,13 +69,13 @@
                 </div>
                 <div class="p-6">
                     <div class="space-y-4">
-<div><label for="enc-msg" class="block text-sm font-medium text-gray-700">Mensagem (Texto)</label><input type="text" id="enc-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="Ex: HELLO"></div>
-<div><label for="enc-key" class="block text-sm font-medium text-gray-700">Chave (Texto, opcional)</label><input type="text" id="enc-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="Ex: XMCKL"><p class="mt-1 text-xs text-gray-500">Opcional: se informada, deve ter o mesmo tamanho do texto. Se vazia, a API gera a chave.</p></div>
+<div><label for="enc-msg" class="block text-sm font-medium text-gray-700">Mensagem (bytes decimais de 0 a 255)</label><input type="text" id="enc-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="Ex: 72, 69, 76, 76, 79"></div>
+<div><label for="enc-key" class="block text-sm font-medium text-gray-700">Chave (bytes decimais, opcional)</label><input type="text" id="enc-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="Ex: 88, 77, 67, 75, 76"><p class="mt-1 text-xs text-gray-500">Se informada, deve ter a mesma quantidade de bytes da mensagem.</p></div>
                         <button id="btn-encrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-60 disabled:cursor-wait">Criptografar</button>
                         <p id="enc-error" class="hidden text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></p>
                     </div>
                     <div id="enc-result-container" class="x-steps-container mt-6 bg-gray-50 rounded-lg p-5 border border-gray-200">
-                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Criptografada (Hex): <span id="enc-out" class="text-indigo-600 text-xl ml-2 tracking-widest break-all"></span></h3>
+                        <h3 class="text-md font-bold text-gray-800 mb-2">Mensagem Criptografada (Decimal): <span id="enc-out" class="text-indigo-600 text-xl ml-2 tracking-widest break-all"></span></h3>
                         <p id="enc-sub" class="text-sm text-gray-600 mt-4 mb-2 font-semibold"></p>
                         <div id="enc-steps" class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner"></div>
                         <div id="enc-extra" class="mt-4 overflow-x-auto"></div>
@@ -92,8 +92,8 @@
                 </div>
                 <div class="p-6">
                     <div class="space-y-4">
-<div><label for="dec-msg" class="block text-sm font-medium text-gray-700">Mensagem Criptografada (Hexadecimal)</label><input type="text" id="dec-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition" placeholder="Ex: 10080f0703"></div>
-<div><label for="dec-key" class="block text-sm font-medium text-gray-700">Chave (Hexadecimal)</label><input type="text" id="dec-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition" placeholder="Ex: 584d434b4c"></div>
+<div><label for="dec-msg" class="block text-sm font-medium text-gray-700">Mensagem Criptografada (Decimal)</label><input type="text" id="dec-msg" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition" placeholder="Ex: 16, 8, 15, 7, 3"></div>
+<div><label for="dec-key" class="block text-sm font-medium text-gray-700">Chave (Decimal)</label><input type="text" id="dec-key" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 transition" placeholder="Ex: 88, 77, 67, 75, 76"></div>
                         <button id="btn-decrypt" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors disabled:opacity-60 disabled:cursor-wait">Decriptografar</button>
                         <p id="dec-error" class="hidden text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></p>
                     </div>
@@ -154,34 +154,35 @@
         }
 
         const bin = (n) => n.toString(2).padStart(8, '0');
-        const hexBytes = (h) => (h.match(/../g) || []).map(x => parseInt(x, 16));
-        const utf8 = (s) => Array.from(new TextEncoder().encode(s));
+        const parseDecimalBytes = (raw, label) => {
+            const values = raw.split(/[\s,;]+/).filter(Boolean).map(Number);
+            if (!values.length || values.some(n => !Number.isInteger(n) || n < 0 || n > 255)) throw new Error(`${label}: informe inteiros decimais entre 0 e 255, separados por vírgula ou espaço.`);
+            return values;
+        };
         function byteTable(labels, cols) {
             const n = cols[0].length;
             if (!n || cols.some(c => c.length !== n)) return '';
             const th = ['#'].concat(labels).map(l => `<th class="px-3 py-2">${l}</th>`).join('');
             let rows = '';
-            for (let i = 0; i < n; i++) rows += `<tr><td class="px-3 py-1">${i + 1}</td>` + cols.map(c => `<td class="px-3 py-1">${bin(c[i])}</td>`).join('') + '</tr>';
+            for (let i = 0; i < n; i++) rows += `<tr><td class="px-3 py-1">${i + 1}</td>` + cols.map(c => `<td class="px-3 py-1">${c[i]}<br>${bin(c[i])}</td>`).join('') + '</tr>';
             return `<table class="min-w-full text-xs font-mono text-center border border-gray-200 rounded-md bg-white"><thead class="bg-gray-100 text-gray-700"><tr>${th}</tr></thead><tbody class="divide-y divide-gray-100">${rows}</tbody></table>`;
         }
 
         bind('enc', 'btn-encrypt', async () => {
-            const text = v('enc-msg'), key = v('enc-key').trim();
-            if (!text) throw new Error('Informe a mensagem.');
-            const payload = { text }; if (key) payload.key = key;
+            const message = parseDecimalBytes(v('enc-msg'), 'Mensagem'), keyText = v('enc-key').trim();
+            const payload = { message }; if (keyText) payload.key = parseDecimalBytes(keyText, 'Chave');
             const d = await callApi('/api/otp/encrypt', payload);
-            $('dec-msg').value = d.cipherTextHex; $('dec-key').value = d.keyHex; // facilita testar a decriptação
-            return { out: d.cipherTextHex, sub: 'Passos Visuais (Texto ➔ Binário ➔ XOR):',
-                rows: [['Mensagem:', text], ['Chave (hex):', d.keyHex]], final: ['Cifrado (hex):', d.cipherTextHex],
-                extra: byteTable(['Mensagem', 'Chave', 'XOR'], [utf8(text), hexBytes(d.keyHex), hexBytes(d.cipherTextHex)]) };
+            $('dec-msg').value = d.cipherText.join(', '); $('dec-key').value = d.key.join(', ');
+            return { out: d.cipherText.join(', '), sub: 'Passos (valores decimais, conversão para binário e XOR):',
+                rows: [['Mensagem decimal:', message.join(', ')], ['Chave decimal:', d.key.join(', ')], ['XOR decimal:', d.cipherText.join(', ')]], final: ['Cifrado decimal:', d.cipherText.join(', ')],
+                extra: byteTable(['Mensagem', 'Chave', 'XOR'], [message, d.key, d.cipherText]) };
         });
         bind('dec', 'btn-decrypt', async () => {
-            const cipherTextHex = v('dec-msg').trim(), keyHex = v('dec-key').trim();
-            if (!cipherTextHex || !keyHex) throw new Error('Informe a mensagem criptografada e a chave em hexadecimal.');
-            const d = await callApi('/api/otp/decrypt', { cipherTextHex, keyHex });
-            return { out: d.result, sub: 'Passos Visuais (Hex ➔ Binário ➔ XOR):',
-                rows: [['Msg. Cript. (hex):', cipherTextHex], ['Chave (hex):', keyHex]], final: ['Resultado:', d.result],
-                extra: byteTable(['Cifrado', 'Chave', 'XOR'], [hexBytes(cipherTextHex), hexBytes(keyHex), utf8(d.result)]) };
+            const cipherText = parseDecimalBytes(v('dec-msg'), 'Texto cifrado'), key = parseDecimalBytes(v('dec-key'), 'Chave');
+            const d = await callApi('/api/otp/decrypt', { cipherText, key });
+            return { out: d.resultText, sub: 'Decriptação (decimal ➔ binário ➔ XOR):',
+                rows: [['Cifrado decimal:', cipherText.join(', ')], ['Chave decimal:', key.join(', ')], ['Mensagem decimal:', d.result.join(', ')]], final: ['Texto decifrado:', d.resultText],
+                extra: byteTable(['Cifrado', 'Chave', 'Mensagem'], [cipherText, key, d.result]) };
         });
         });
     </script>

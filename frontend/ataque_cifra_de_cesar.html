@@ -55,7 +55,7 @@
                 Ataque por Força Bruta à Cifra de César
             </h1>
             <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-                Sem conhecer a chave <b>K</b>, basta testar todos os 25 deslocamentos possíveis e identificar visualmente qual deles produz um texto legível. Como bônus, a <b>análise de frequência</b> da língua portuguesa sugere a chave mais provável.
+                Testa os 25 deslocamentos e sugere a mensagem mais provável comparando frequências de letras e palavras comuns em português e inglês.
             </p>
         </div>
 
@@ -69,10 +69,9 @@
             <div class="p-6">
                 <div class="space-y-4">
                     <div>
-                        <label for="atk-msg" class="block text-sm font-medium text-gray-700" style="font-weight: bold">Texto Cifrado (sem a chave)</label>
-                        <p style="font-weight: bold; margin-top: 10px; color: gray; font-size: small;">Ex: WHYHILUZ WLSH HWYLZLUAHJHV - KPZZL AHYKLSSP</p>
-                        <textarea id="atk-msg" rows="3" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition"></textarea>
-                        <p class="mt-1 text-xs text-gray-500">Maiúsculas/minúsculas e pontuação são preservadas; a análise de frequência considera apenas as letras A–Z. Textos curtos podem gerar sugestões imprecisas.</p>
+                        <label for="atk-msg" class="block text-sm font-medium text-gray-700">Texto Cifrado (sem a chave)</label>
+                        <textarea id="atk-msg" rows="3" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="Ex: KHOOR PB QDPH LV SHGUR"></textarea>
+                        <p class="mt-1 text-xs text-gray-500">Maiúsculas/minúsculas e pontuação são preservadas. A detecção de idioma é automática; textos curtos ou nomes próprios podem reduzir a confiança.</p>
                     </div>
                     <button id="btn-attack" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
                         Executar Ataque
@@ -82,14 +81,15 @@
 
                 <div id="atk-result-container" class="x-steps-container mt-6">
                     <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-5">
-                        <h3 class="text-md font-bold text-gray-800">Chave Mais Provável (Análise de Frequência): <span id="atk-best-key" class="text-emerald-600 text-xl ml-2"></span></h3>
+                        <h3 class="text-md font-bold text-gray-800">Sugestão: chave <span id="atk-best-key" class="text-emerald-600 text-xl ml-1"></span></h3>
+                        <p class="mt-1 text-sm text-gray-600">Idioma provável: <span id="atk-best-language" class="font-semibold"></span> · Confiança: <span id="atk-confidence" class="font-semibold"></span></p>
                         <p class="mt-2 text-sm text-gray-600">Texto decifrado: <span id="atk-best-text" class="font-semibold text-emerald-700 break-words"></span></p>
                     </div>
 
                     <div class="mt-6 bg-gray-50 rounded-lg p-5 border border-gray-200">
                         <p class="text-sm text-gray-600 mb-2 font-semibold">Todas as possibilidades (K = 1 a 25):</p>
                         <div id="atk-list" class="bg-gray-900 text-green-400 p-4 rounded-md font-mono text-sm overflow-x-auto shadow-inner space-y-1"></div>
-                        <p class="mt-2 text-xs text-gray-500">A pontuação é o negativo da diferença total entre as frequências observadas e as esperadas em português: quanto mais próxima de 0, mais provável.</p>
+                        <p class="mt-2 text-xs text-gray-500">A pontuação combina frequência de letras e proporção de palavras reconhecidas no idioma provável. É uma heurística, não uma garantia.</p>
                     </div>
                 </div>
             </div>
@@ -98,66 +98,45 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-
-            // Mesma lógica do módulo caesar_attack.ts (decifraCesar + calcularPontuacaoFrequencia),
-            // executada no navegador porque a rota GET /caesar_attacks atual não devolve dados.
-            const FREQ_PORTUGUES = {
-                A: 14.63, B: 1.04, C: 3.88, D: 4.96, E: 12.57, F: 1.02, G: 1.30,
-                H: 1.28, I: 6.18, J: 0.40, K: 0.02, L: 2.78, M: 4.74, N: 5.05,
-                O: 10.73, P: 2.52, Q: 1.20, R: 6.53, S: 7.81, T: 4.34, U: 4.63,
-                V: 1.67, W: 0.01, X: 0.21, Y: 0.01, Z: 0.47
-            };
-
-            function decifraCesar(texto, deslocamento) {
-                return texto.replace(/[a-zA-Z]/g, (char) => {
-                    const base = char >= 'a' ? 97 : 65;
-                    const code = char.charCodeAt(0) - base;
-                    return String.fromCharCode((code - deslocamento + 26) % 26 + base);
-                });
-            }
-
-            function calcularPontuacaoFrequencia(texto) {
-                const limpo = texto.toUpperCase().replace(/[^A-Z]/g, '');
-                if (limpo.length === 0) return -Infinity;
-                const contagem = {};
-                for (const c of limpo) contagem[c] = (contagem[c] || 0) + 1;
-                let pontuacao = 0;
-                for (const c in contagem) {
-                    pontuacao -= Math.abs((contagem[c] / limpo.length) * 100 - (FREQ_PORTUGUES[c] || 0));
-                }
-                return pontuacao;
-            }
-
             const $ = (id) => document.getElementById(id);
-            const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+            const button = $('btn-attack');
+            const escapeHtml = (value) => String(value).replace(/[&<>\"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;' }[char]));
 
-            $('btn-attack').addEventListener('click', () => {
-                const err = $('atk-error'), container = $('atk-result-container');
-                err.classList.add('hidden');
-                const texto = $('atk-msg').value;
+            button.addEventListener('click', async () => {
+                const error = $('atk-error'), container = $('atk-result-container');
+                const originalLabel = button.textContent;
+                error.classList.add('hidden');
+                button.disabled = true;
+                button.textContent = 'Analisando...';
+                try {
+                    const response = await fetch('/api/caesar/attack', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: $('atk-msg').value })
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.error || 'Não foi possível analisar o texto.');
 
-                if (!texto.trim()) { err.textContent = 'Texto inválido.'; err.classList.remove('hidden'); container.style.display = 'none'; return; }
-                if (calcularPontuacaoFrequencia(texto) === -Infinity) { err.textContent = 'O texto precisa conter ao menos uma letra (A–Z).'; err.classList.remove('hidden'); container.style.display = 'none'; return; }
-
-                const resultados = [];
-                for (let k = 1; k < 26; k++) {
-                    const candidato = decifraCesar(texto, k);
-                    resultados.push({ deslocamento: k, textoClaro: candidato, pontuacao: calcularPontuacaoFrequencia(candidato) });
+                    $('atk-best-key').textContent = result.best.shift;
+                    $('atk-best-language').textContent = result.best.language;
+                    $('atk-confidence').textContent = result.confidence;
+                    $('atk-best-text').textContent = result.best.plaintext;
+                    $('atk-list').innerHTML = [...result.candidates].sort((a, b) => a.shift - b.shift).map((candidate) => {
+                        const isBest = candidate.shift === result.best.shift;
+                        return `<div class="flex flex-wrap gap-x-4 ${isBest ? 'text-yellow-300 font-bold' : ''}">` +
+                            `<span class="shrink-0">Chave ${String(candidate.shift).padStart(2, '0')}:</span>` +
+                            `<span class="flex-1 break-words">${escapeHtml(candidate.plaintext)}${isBest ? ' ★' : ''}</span>` +
+                            `<span class="shrink-0 text-gray-400 font-normal">${escapeHtml(candidate.language)} · ${candidate.score.toFixed(1)}</span></div>`;
+                    }).join('');
+                    container.style.display = 'block';
+                } catch (exception) {
+                    error.textContent = exception instanceof Error ? exception.message : 'Falha ao executar o ataque.';
+                    error.classList.remove('hidden');
+                    container.style.display = 'none';
+                } finally {
+                    button.disabled = false;
+                    button.textContent = originalLabel;
                 }
-                const melhor = [...resultados].sort((a, b) => b.pontuacao - a.pontuacao)[0];
-
-                $('atk-best-key').textContent = melhor.deslocamento;
-                $('atk-best-text').textContent = melhor.textoClaro;
-                $('atk-list').innerHTML = resultados.map(r => {
-                    const best = r.deslocamento === melhor.deslocamento;
-                    return `<div class="flex gap-4 ${best ? 'text-yellow-300 font-bold' : ''}">` +
-                        `<span class="shrink-0">Chave ${String(r.deslocamento).padStart(2, '0')}:</span>` +
-                        `<span class="flex-1 break-words">${esc(r.textoClaro)}${best ? ' ★' : ''}</span>` +
-                        `<span class="shrink-0 text-gray-400 font-normal">${r.pontuacao.toFixed(1)}</span></div>`;
-                }).join('');
-
-                container.style.display = 'block';
-                container.animate([{ opacity: 0, transform: 'translateY(-10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 300, fill: 'forwards' });
             });
         });
     </script>

@@ -80,6 +80,42 @@ const options: swaggerJSDoc.Options = {
           }
         }
       },
+      "/api/caesar/attack": {
+        post: {
+          summary: "Ataque de força bruta e detecção de idioma da cifra de César",
+          tags: ["Cifra de César"],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { text: { type: "string", example: "KHOOR PB QDPH LV SHGUR" } },
+                  required: ["text"]
+                }
+              }
+            }
+          },
+          responses: {
+            200: {
+              description: "25 candidatos classificados com idioma provável e confiança",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      best: { type: "object", properties: { shift: { type: "integer", example: 3 }, plaintext: { type: "string", example: "HELLO MY NAME IS PEDRO" }, language: { type: "string", example: "Inglês" }, score: { type: "number" } } },
+                      confidence: { type: "string", example: "Alta" },
+                      candidates: { type: "array", items: { type: "object" } }
+                    }
+                  }
+                }
+              }
+            },
+            400: { description: "Texto inválido" }
+          }
+        }
+      },
       "/api/vigenere/encrypt": {
         post: {
           summary: "Cifra de Vigenère - Criptografar",
@@ -155,10 +191,10 @@ const options: swaggerJSDoc.Options = {
                 schema: {
                   type: "object",
                   properties: {
-                    text: { type: "string", example: "HELLO" },
-                    key: { type: "string", description: "Opcional: chave customizada com o mesmo tamanho do texto", example: "XMCKL" }
+                    message: { type: "array", items: { type: "integer", minimum: 0, maximum: 255 }, description: "Bytes decimais da mensagem", example: [72, 69, 76, 76, 79] },
+                    key: { type: "array", items: { type: "integer", minimum: 0, maximum: 255 }, description: "Opcional: chave decimal com a mesma quantidade de bytes", example: [88, 77, 67, 75, 76] }
                   },
-                  required: ["text"]
+                  required: ["message"]
                 }
               }
             }
@@ -172,7 +208,9 @@ const options: swaggerJSDoc.Options = {
                     type: "object",
                     properties: {
                       cipherTextHex: { type: "string", example: "10080f0703" },
-                      keyHex: { type: "string", example: "584d434b4c" }
+                      keyHex: { type: "string", example: "584d434b4c" },
+                      cipherText: { type: "array", items: { type: "integer" }, example: [16, 8, 15, 7, 3] },
+                      key: { type: "array", items: { type: "integer" }, example: [88, 77, 67, 75, 76] }
                     }
                   }
                 }
@@ -193,10 +231,10 @@ const options: swaggerJSDoc.Options = {
                 schema: {
                   type: "object",
                   properties: {
-                    cipherTextHex: { type: "string", example: "10080f0703" },
-                    keyHex: { type: "string", example: "584d434b4c" }
+                    cipherText: { type: "array", items: { type: "integer", minimum: 0, maximum: 255 }, example: [16, 8, 15, 7, 3] },
+                    key: { type: "array", items: { type: "integer", minimum: 0, maximum: 255 }, example: [88, 77, 67, 75, 76] }
                   },
-                  required: ["cipherTextHex", "keyHex"]
+                  required: ["cipherText", "key"]
                 }
               }
             }
@@ -206,7 +244,7 @@ const options: swaggerJSDoc.Options = {
               description: "Sucesso",
               content: {
                 "application/json": {
-                  schema: { type: "object", properties: { result: { type: "string", example: "HELLO" } } }
+                  schema: { type: "object", properties: { result: { type: "array", items: { type: "integer" }, example: [72, 69, 76, 76, 79] }, resultText: { type: "string", example: "HELLO" } } }
                 }
               }
             },
